@@ -1,0 +1,8 @@
+# require 'init_frame'
+require 'pathname'
+require 'core'
+require 'error'
+require 'directives'
+require 'assets_finder'
+require 'js_assets'
+require 'css_assets'
