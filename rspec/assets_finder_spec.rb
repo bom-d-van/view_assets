@@ -24,33 +24,42 @@ describe AssetsFinder do
   end
   
   it '#retrieve_app_assets' do
-    simple_af.send(:retrieve_app_assets, 'asset1').should == 'app/assets/asset1.js'
+    simple_af.send(:retrieve_app_assets, 'asset1').should == 'app/assets/javascripts/asset1.js'
   end
   
   describe '#retrieve_lib_assets' do
     it 'one-file library' do
       af = AssetsFinder.new("#{FIXTURE_ROOT}/fixtures", '', '')
-      libs = %w(lib2/others lib2/index lib3).map { |f| "#{lib}/javascripts/#{f}.js" }
+      libs = %w(lib2/others lib2/index lib3).map { |f| "lib/javascripts/#{f}.js" }
       af.send(:retrieve_lib_assets, 'lib1').should == libs
     end
     
     it 'indexing(multiple-file) library' do
-      pending
+      pending 'unimplemeted'
+    end
+    
+    context 'other-library-dependent library' do
+      it('one-file library dependency') { pending 'unimplemeted' }
+      it('indexing library dependency') { pending 'unimplemeted' }
+    end
+    
+    it 'vendor dependent library' do
+      pending 'unimplemeted'
     end
     
     it 'self-loop dependency declaration' do
-      pending
+      pending 'unimplemeted'
     end
   end
   
   describe '#retrieve_assets' do
     it 'app assets only retrievement' do
-      assumed_assets = %w(others others2 others3).map { |f| "app/assets/#{f}.js" }
-      simple_af.send(:retrieve_assets, "#{FIXTURE_ROOT}/simple/action.js").should == assumed_assets
+      assumed_assets = %w(others others2 others3).map { |f| "app/assets/javascripts/#{f}.js" }
+      simple_af.send(:retrieve_assets, "#{FIXTURE_ROOT}/simple.js").should == assumed_assets
     end
     
     it 'retrievement with end_of_parsing directive' do
-      pending
+      pending 'unimplemeted'
     end
   end
 end
