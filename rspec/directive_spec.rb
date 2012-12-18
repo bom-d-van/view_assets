@@ -9,7 +9,17 @@ describe Directive do
   end
   
   describe '#parse' do
-    it { expect { js_directive.parse('') }.to raise_error(UnknownDirectiveError) }
+    # it { expect { js_directive.parse('') }.to raise_error(UnknownDirectiveError) }
+    # it 'return an array with empty string and empty array elements when passed into '
+    context 'returned value' do
+      # it { js_directive.parse('') }
+      pending
+    end
+    
+    context 'when passed into illegal directive' do
+      # it ''
+      pending
+    end
   end
     
   # TODO refactor all tests bellow following betterspecs.org
