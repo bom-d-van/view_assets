@@ -1,7 +1,8 @@
 module ViewAssets
   class JavascriptAssets < AssetsFinder
     def assets_path
-      "#{root_path}/javascripts"
+      # "#{root_path}/javascripts"
+      'assets/javascripts'
     end
     
     def asset_extension
