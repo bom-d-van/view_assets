@@ -108,14 +108,13 @@ module ViewAssets
       Pathname.new(manifest).each_line do |line|
         # break if directive.ending_directive?(l) # TODO add ending_directive support
         next unless directive.legal_directive?(line)
-        assets.concat parse(line)
+        assets.concat(analyze(*directive.parse(line)))
       end
 
       assets
     end
     
-    def parse(directive, primitive_params)
-      asset_category, path_params = directive.parse(l)
+    def analyze(asset_category, path_params)
       case asset_category
       when 'vendor'
         path_params.map { |pp| retrieve_vendor_assets(pp) }
@@ -130,8 +129,24 @@ module ViewAssets
       
     end
     
+    # for lib and vendor assets, finder will assume that it was stored in the
+    # root of vendor|lib and the file itself is a manifest file at first. If
+    # that isn't the case, finder will try to locate it in
+    # vendor|lib/:lib_or_vendor_name and take index.js inside that folder as
+    # manifest.
+    # TODO to test
     def retrieve_lib_assets(manifest)
+      would_be_manifest1 = absolutely_pathize(relatively_pathize('lib', manifest))
+      would_be_manifest2 = absolutely_pathize(relatively_pathize("lib/#{manifest}", 'index'))
       
+      real_manifest = nil
+      if FileTest.exist?(would_be_manifest1)
+        real_manifest = would_be_manifest1
+      else FileTest.exist?(would_be_manifest2)
+        real_manifest = would_be_manifest2
+      end
+      
+      retrieve_assets(real_manifest)
     end
     
     def retrieve_app_assets(assets)
@@ -142,14 +157,17 @@ module ViewAssets
       "#{asset_dir}/#{asset.match(/\.#{asset_extension}$/) ? asset : "#{asset}.js"}"
     end
     
+    # TODO add tests
     def app_path
       "app/#{assets_path}"
     end
     
+    # TODO add tests
     def lib_path
       "lib/#{assets_path}"
     end
     
+    # TODO add tests
     def vendor_path
       "vendor/#{assets_path}"
     end
