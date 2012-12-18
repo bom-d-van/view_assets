@@ -1,20 +1,56 @@
 require File.expand_path File.dirname(__FILE__) + '/rspec_helper'
 
 describe AssetsFinder do
+  let(:simple_af) { AssetsFinder.new('', '', '') }
   before(:each) do
-    # AssetsFinder.any_instance.stub(:each_line) do |&directive_handler|
-    #   [
-    #     '//= require_vendor vendor1, vendor2',
-    #     ' *= require_lib lib1, lib2',
-    #     '/*= require app1, app2 */'
-    #   ].map do |l|
-    #     directive_handler.call l
-    #   end
-    # end
-    # @assets_finder = AssetsFinder.new('root', 'controller', 'action')
+    AssetsFinder.any_instance.stub(:asset_extension).and_return('js')
+    AssetsFinder.any_instance.stub(:asset_type).and_return('js')
+    AssetsFinder.any_instance.stub(:assets_path).and_return('assets/javascripts')
   end
   
-  it 'should retrieve all paths' do
-    # assets_finder.retrieve_assets('manifest').should == 
+  it '#absolutely_pathize' do
+    af = AssetsFinder.new(FIXTURE_ROOT, '', '')
+    af.send(:absolutely_pathize, 'path', 'file').should == "#{FIXTURE_ROOT}/path/file.js"
+  end
+  
+  describe '#relatively_pathize' do
+    it 'with filename extension' do
+      simple_af.send(:relatively_pathize, 'dir', 'asset').should == 'dir/asset.js'
+    end
+    
+    it 'without filename extension' do 
+      simple_af.send(:relatively_pathize, 'dir', 'asset.js').should == 'dir/asset.js'
+    end
+  end
+  
+  it '#retrieve_app_assets' do
+    simple_af.send(:retrieve_app_assets, 'asset1').should == 'app/assets/asset1.js'
+  end
+  
+  describe '#retrieve_lib_assets' do
+    it 'one-file library' do
+      af = AssetsFinder.new("#{FIXTURE_ROOT}/fixtures", '', '')
+      libs = %w(lib2/others lib2/index lib3).map { |f| "#{lib}/javascripts/#{f}.js" }
+      af.send(:retrieve_lib_assets, 'lib1').should == libs
+    end
+    
+    it 'indexing(multiple-file) library' do
+      pending
+    end
+    
+    it 'self-loop dependency declaration' do
+      pending
+    end
+  end
+  
+  describe '#retrieve_assets' do
+    it 'app assets only retrievement' do
+      assumed_assets = %w(others others2 others3).map { |f| "app/assets/#{f}.js" }
+      simple_af.send(:retrieve_assets, "#{FIXTURE_ROOT}/simple/action.js").should == assumed_assets
+    end
+    
+    it 'retrievement with end_of_parsing directive' do
+      pending
+    end
   end
 end
