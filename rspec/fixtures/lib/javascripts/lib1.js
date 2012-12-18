@@ -1,1 +1,1 @@
-//= require_lib lib2, lib3
+//= require_lib lib3
