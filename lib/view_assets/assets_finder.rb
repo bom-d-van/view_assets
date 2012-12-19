@@ -81,21 +81,16 @@ module ViewAssets
     # includes all the assets inside this folder. Among these files, a file named
     # index.[js|css] will be taken as manifest file.
     def action_assets
-      manifest_file, assets = '', []
-      # action_path = "#{assets_path}/#{controller_name}/#{action_name}"
-      action_path = "#{root}/#{app_path}/#{controller_name}/#{action_name}"
+      action_path = "#{root}/#{app_path}/#{controller_name}"
+      single_action_path = "#{action_path}/#{action_name}.#{asset_extension}"
+      indexed_action_path = "#{action_path}/#{action_name}/index.#{asset_extension}"
 
       # find files in the conventional directory
-      if FileTest.exist?(action_path + ".#{asset_extension}")
-        manifest_file = action_path + ".#{asset_extension}"
-        assets.push manifest_file
-      else
-        manifest_file = "#{action_path}/index.#{asset_extension}"
-        assets = Dir.glob("#{action_path}/**/*.#{asset_extension}")
-      end
-      dependent_assets = retrieve_assets(manifest_file) # detect and parse extra-included-files directives
-
-      dependent_assets.concat assets
+      manifest = nil
+      manifest = single_action_path if FileTest.exist?(single_action_path)
+      manifest = indexed_action_path if FileTest.exist?(indexed_action_path)
+      
+      manifest.nil? ? [] : retrieve_assets(manifest)
     end
 
     private
