@@ -138,19 +138,25 @@ module ViewAssets
     # that isn't the case, finder will try to locate it in
     # vendor|lib/:lib_or_vendor_name and take index.js inside that folder as
     # manifest.
-    # TODO to test
-    def retrieve_lib_assets(manifest)
-      would_be_manifest1 = absolutely_pathize(relatively_pathize('lib', manifest))
-      would_be_manifest2 = absolutely_pathize(relatively_pathize("lib/#{manifest}", 'index'))
+    def meta_retrieve(manifest_path, manifest)
+      single_file_lib = absolutely_pathize(manifest_path, manifest)
+      
+      lib_dir = "#{manifest_path}/#{manifest}"
+      indexing_lib = absolutely_pathize(lib_dir, 'index')
+      other_files_apart_from_manifest = []
       
       real_manifest = nil
-      if FileTest.exist?(would_be_manifest1)
-        real_manifest = would_be_manifest1
-      else FileTest.exist?(would_be_manifest2)
-        real_manifest = would_be_manifest2
+      if FileTest.exist?(single_file_lib)
+        real_manifest = single_file_lib
+      else FileTest.exist?(indexing_lib)
+        real_manifest = indexing_lib
+        other_files_apart_from_manifest = retrieve_all_from(lib_dir)
       end
       
-      retrieve_assets(real_manifest)
+      retrieve_assets(real_manifest).flatten
+                                    .concat(other_files_apart_from_manifest)
+                                    .concat([unabsolutely_pathize(real_manifest)])
+                                    .uniq
     end
     
     def retrieve_app_assets(assets)
