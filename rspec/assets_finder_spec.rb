@@ -74,7 +74,7 @@ describe AssetsFinder do
   
   describe '#retrieve_assets' do
     it 'app assets only retrievement' do
-      assumed_assets = %w(others others2 others3).map { |f| "app/assets/javascripts/#{f}.js" }
+      assumed_assets = %w(others others2 others3).map { |f| "app/javascripts/#{f}.js" }
       simple_af.send(:retrieve_assets, "#{FIXTURE_ROOT}/simple.js").should == assumed_assets
     end
     
