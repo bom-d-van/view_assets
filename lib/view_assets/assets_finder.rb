@@ -119,6 +119,12 @@ module ViewAssets
       end
     end
     
+    # def retrieve_app_assets(assets)
+    def retrieve_app_assets(manifest)
+      # relatively_pathize(app_path, assets)
+      meta_retrieve(app_path, manifest)
+    end
+    
     def retrieve_vendor_assets(manifest)
       
     end
