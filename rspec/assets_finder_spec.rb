@@ -55,13 +55,21 @@ describe AssetsFinder do
       empty_af.send(:retrieve_lib_assets, 'lib2').should == libs
     end
     
-    it 'vendor dependent library' do
-      pending 'unimplemeted'
+    it 'other-library-dependent library' do
+      # it('one-file library dependency') { pending 'unimplemeted' }
+      # it('indexing library dependency') { pending 'unimplemeted' }
+      libs = %w(lib3 lib1 lib2/index lib2/others lib4/index).map { |f| "lib/javascripts/#{f}.js" }
+      empty_af.send(:retrieve_lib_assets, 'lib4').should == libs
     end
-    
-    it 'self-loop dependency declaration' do
-      pending 'unimplemeted'
-    end
+  end
+
+  it '#requrie_vendor_assets' do
+    vendors = %w(vendor1 vendor2/index vendor2/others).map { |f| "vendor/javascripts/#{f}.js" }
+    empty_af.send(:retrieve_vendor_assets, 'vendor2').should == vendors
+  end
+  
+  it 'self-loop dependency declaration' do
+    pending 'unimplemeted'
   end
   
   describe '#retrieve_assets' do
