@@ -65,15 +65,14 @@ module ViewAssets
     # in /app/assets/[javascripts|stylesheets] folder if:controller.[js|css]
     # in /app/assets/[javascripts|stylesheets]/:controller is not existed.
     def controller_assets
-      # application_manifest = "#{assets_path}/application.#{asset_extension}"
       application_manifest = "#{root}/#{app_path}/application.#{asset_extension}"
-      # controller_manifest = "#{assets_path}/#{controller_name}.#{asset_extension}"
       controller_manifest = "#{root}/#{app_path}/#{controller_name}.#{asset_extension}"
-      if FileTest.exist? controller_manifest
-        
-      elsif FileTest.exist? application_manifest
-        
-      end
+      
+      manifest = nil
+      manifest = application_manifest if FileTest.exist?(application_manifest)
+      manifest = controller_manifest if FileTest.exist?(controller_manifest)
+      
+      manifest.nil? ? [] : retrieve_assets(manifest)
     end
     
     # If the action assets is only a file, finder will also consider it a
