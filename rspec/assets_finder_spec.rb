@@ -9,9 +9,14 @@ describe AssetsFinder do
     AssetsFinder.any_instance.stub(:assets_path).and_return('javascripts')
   end
   
-  it '#absolutely_pathize' do
-    af = AssetsFinder.new(FIXTURE_ROOT, '', '')
-    af.send(:absolutely_pathize, 'path', 'file').should == "#{FIXTURE_ROOT}/path/file.js"
+  describe 'path string manipulation' do
+    it '#absolutely_pathize' do
+      empty_af.send(:absolutely_pathize, 'path', 'file').should == "#{FIXTURE_ROOT}/path/file.js"
+    end
+
+    it '#unabsolutely_pathize' do
+      empty_af.send(:unabsolutely_pathize, "#{FIXTURE_ROOT}/path/file.js").should == 'path/file.js'
+    end
   end
   
   describe '#relatively_pathize' do
