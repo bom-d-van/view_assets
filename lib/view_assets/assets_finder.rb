@@ -159,8 +159,9 @@ module ViewAssets
                                     .uniq
     end
     
-    def retrieve_app_assets(assets)
-      relatively_pathize(app_path, assets)
+    # TODO add test for dir should be a relative path
+    def retrieve_all_from(dir)
+      Dir["#{root}/#{dir}/**/*.#{asset_extension}"].map { |file| unabsolutely_pathize(file) }
     end
     
     def relatively_pathize(asset_dir, asset)
