@@ -2,6 +2,7 @@ require File.expand_path File.dirname(__FILE__) + '/rspec_helper'
 
 describe AssetsFinder do
   let(:simple_af) { AssetsFinder.new('', '', '') }
+  let(:empty_af) { AssetsFinder.new(FIXTURE_ROOT, '', '') }
   before(:each) do
     AssetsFinder.any_instance.stub(:asset_extension).and_return('js')
     AssetsFinder.any_instance.stub(:asset_type).and_return('js')
