@@ -184,7 +184,11 @@ module ViewAssets
     end
     
     def absolutely_pathize(asset_dir, asset)
-      "#{root}/#{asset_dir}/#{asset}.#{asset_extension}"
+      "#{root}/#{asset_dir}/#{asset.match(/\.#{asset_extension}$/) ? asset : "#{asset}.js"}"
+    end
+    
+    def unabsolutely_pathize(asset_path)
+      asset_path.gsub(/^#{root}\//, '')
     end
 
     # def complete_paths_of_assets(directive_params, is_tree_directive)
