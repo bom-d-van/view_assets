@@ -6,7 +6,7 @@ describe AssetsFinder do
   before(:each) do
     AssetsFinder.any_instance.stub(:asset_extension).and_return('js')
     AssetsFinder.any_instance.stub(:asset_type).and_return('js')
-    AssetsFinder.any_instance.stub(:assets_path).and_return('assets/javascripts')
+    AssetsFinder.any_instance.stub(:assets_path).and_return('javascripts')
   end
   
   it '#absolutely_pathize' do
