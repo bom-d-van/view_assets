@@ -35,20 +35,24 @@ describe AssetsFinder do
     af.send(:retrieve_app_assets, 'action1').should == apps
   end
   
+  # for lib dependency
+  # FIXME convert this description of example group for "meta_retrieve" method
   describe '#retrieve_lib_assets' do
-    it 'one-file library' do
-      af = AssetsFinder.new("#{FIXTURE_ROOT}/fixtures", '', '')
-      libs = %w(lib2/others lib2/index lib3).map { |f| "lib/javascripts/#{f}.js" }
-      af.send(:retrieve_lib_assets, 'lib1').should == libs
+    context 'one-file library' do
+      it 'has corresponding requiring sequence' do
+        libs = %w(lib3 lib1).map { |f| "lib/javascripts/#{f}.js" }
+        empty_af.send(:retrieve_lib_assets, 'lib1').should == libs
+      end
+      
+      it 'has not corresponding requiring sequence' do
+        libs = %w(lib1 lib3).map { |f| "lib/javascripts/#{f}.js" }
+        empty_af.send(:retrieve_lib_assets, 'lib1').should_not == libs
+      end
     end
     
     it 'indexing(multiple-file) library' do
-      pending 'unimplemeted'
-    end
-    
-    context 'other-library-dependent library' do
-      it('one-file library dependency') { pending 'unimplemeted' }
-      it('indexing library dependency') { pending 'unimplemeted' }
+      libs = %w(index others).map { |f| "lib/javascripts/lib2/#{f}.js" }
+      empty_af.send(:retrieve_lib_assets, 'lib2').should == libs
     end
     
     it 'vendor dependent library' do
