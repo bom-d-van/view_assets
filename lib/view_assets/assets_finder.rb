@@ -126,7 +126,11 @@ module ViewAssets
     end
     
     def retrieve_vendor_assets(manifest)
-      
+      meta_retrieve(vendor_path, manifest)
+    end
+    
+    def retrieve_lib_assets(manifest)
+      meta_retrieve(lib_path, manifest)
     end
     
     # for lib and vendor assets, finder will assume that it was stored in the
