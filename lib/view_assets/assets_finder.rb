@@ -170,7 +170,7 @@ module ViewAssets
     
     # TODO add tests
     def app_path
-      "app/#{assets_path}"
+      "app/#{assets_path}/#{controller_name}"
     end
     
     # TODO add tests
