@@ -30,7 +30,9 @@ describe AssetsFinder do
   end
   
   it '#retrieve_app_assets' do
-    simple_af.send(:retrieve_app_assets, 'asset1').should == 'app/assets/javascripts/asset1.js'
+    af = AssetsFinder.new(FIXTURE_ROOT, 'controller1', 'action1')
+    apps = %w(action2/others action1).map { |f| "app/javascripts/controller1/#{f}.js" }
+    af.send(:retrieve_app_assets, 'action1').should == apps
   end
   
   describe '#retrieve_lib_assets' do
