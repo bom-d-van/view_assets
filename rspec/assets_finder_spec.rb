@@ -31,10 +31,18 @@ describe AssetsFinder do
     end
   end
   
-  it '#retrieve_app_assets' do
-    af = AssetsFinder.new(FIXTURE_ROOT, 'controller1', 'action1')
-    apps = %w(action2/others action1).map { |f| "app/javascripts/controller1/#{f}.js" }
-    af.send(:retrieve_app_assets, 'action1').should == apps
+  context '#retrieve_app_asset' do
+    it 'can retrieve asset of other actions in the same controller' do
+      asset = "app/javascripts/main/multiple_files_action/others.js"
+      
+      main_af.send(:retrieve_app_asset, 'multiple_files_action/others').should == asset
+    end
+    
+    it 'can retrieve asset from a different controller' do
+      asset = "app/javascripts/another_controller/another_multiple_files_action/others.js"
+      
+      main_af.send(:retrieve_app_asset, '/another_controller/another_multiple_files_action/others.js').should == asset
+    end
   end
   
   # for lib dependency
@@ -42,26 +50,30 @@ describe AssetsFinder do
   describe '#retrieve_lib_assets' do
     context 'one-file library' do
       it 'has corresponding requiring sequence' do
-        libs = %w(lib3 lib1).map { |f| "lib/javascripts/#{f}.js" }
-        empty_af.send(:retrieve_lib_assets, 'lib1').should == libs
+        pending 'need to be corrected'
+        libs = %w(lib3 lib1).map { |f| "lib/javascripts/#{ f }.js" }
+        simple_af.send(:retrieve_lib_assets, 'lib1').should == libs
       end
       
       it 'has not corresponding requiring sequence' do
-        libs = %w(lib1 lib3).map { |f| "lib/javascripts/#{f}.js" }
-        empty_af.send(:retrieve_lib_assets, 'lib1').should_not == libs
+        pending 'need to be corrected'
+        libs = %w(lib1 lib3).map { |f| "lib/javascripts/#{ f }.js" }
+        simple_af.send(:retrieve_lib_assets, 'lib1').should_not == libs
       end
     end
     
     it 'indexing(multiple-file) library' do
-      libs = %w(index others).map { |f| "lib/javascripts/lib2/#{f}.js" }
-      empty_af.send(:retrieve_lib_assets, 'lib2').should == libs
+      pending 'need to be corrected'
+      libs = %w(index others).map { |f| "lib/javascripts/lib2/#{ f }.js" }
+      simple_af.send(:retrieve_lib_assets, 'lib2').should == libs
     end
     
     it 'other-library-dependent library' do
       # it('one-file library dependency') { pending 'unimplemeted' }
       # it('indexing library dependency') { pending 'unimplemeted' }
-      libs = %w(lib3 lib1 lib2/index lib2/others lib4/index).map { |f| "lib/javascripts/#{f}.js" }
-      empty_af.send(:retrieve_lib_assets, 'lib4').should == libs
+      pending 'need to be corrected'
+      libs = %w(lib3 lib1 lib2/index lib2/others lib4/index).map { |f| "lib/javascripts/#{ f }.js" }
+      simple_af.send(:retrieve_lib_assets, 'lib4').should == libs
     end
   end
 
