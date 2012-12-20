@@ -13,21 +13,21 @@ describe AssetsFinder do
   
   describe 'path string manipulation' do
     it '#absolutely_pathize' do
-      empty_af.send(:absolutely_pathize, 'path', 'file').should == "#{FIXTURE_ROOT}/path/file.js"
+      simple_af.send(:absolutely_pathize, 'path', 'file').should == "#{ FIXTURE_ROOT }/path/file.js"
     end
 
     it '#unabsolutely_pathize' do
-      empty_af.send(:unabsolutely_pathize, "#{FIXTURE_ROOT}/path/file.js").should == 'path/file.js'
+      simple_af.send(:unabsolutely_pathize, "#{ FIXTURE_ROOT }/path/file.js").should == 'path/file.js'
     end
   end
   
   describe '#relatively_pathize' do
     it 'with filename extension' do
-      simple_af.send(:relatively_pathize, 'dir', 'asset').should == 'dir/asset.js'
+      empty_af.send(:relatively_pathize, 'dir', 'asset').should == 'dir/asset.js'
     end
     
     it 'without filename extension' do 
-      simple_af.send(:relatively_pathize, 'dir', 'asset.js').should == 'dir/asset.js'
+      empty_af.send(:relatively_pathize, 'dir', 'asset.js').should == 'dir/asset.js'
     end
   end
   
