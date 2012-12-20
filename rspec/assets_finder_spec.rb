@@ -78,8 +78,9 @@ describe AssetsFinder do
   end
 
   it '#requrie_vendor_assets' do
-    vendors = %w(vendor1 vendor2/index vendor2/others).map { |f| "vendor/javascripts/#{f}.js" }
-    empty_af.send(:retrieve_vendor_assets, 'vendor2').should == vendors
+    pending 'consider whether is this example still necessary?'
+    # vendors = %w(vendor1 vendor2/index vendor2/others).map { |f| "vendor/javascripts/#{ f }.js" }
+    # simple_af.send(:retrieve_vendor_assets, 'vendor2').should == vendors
   end
   
   it 'self-loop dependency declaration' do
@@ -87,13 +88,84 @@ describe AssetsFinder do
   end
   
   describe '#retrieve_assets' do
-    it 'app assets only retrievement' do
-      assumed_assets = %w(others others2 others3).map { |f| "app/javascripts/#{f}.js" }
-      simple_af.send(:retrieve_assets, "#{FIXTURE_ROOT}/simple.js").should == assumed_assets
+    context 'when retrieving app assets from actions' do
+      it 'in the same controller' do
+        required_assets = ["app/javascripts/main/multiple_files_action/others.js"]
+        app_manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/retrieving_from_another_action.js"
+        
+        main_af.send(:retrieve_assets, app_manifest).should == required_assets
+      end
+      
+      it 'from a different controller' do
+        required_assets = ["app/javascripts/another_controller/another_multiple_files_action/others.js"]
+        app_manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/retrieving_from_another_controller.js"
+        
+        main_af.send(:retrieve_assets, app_manifest).should == required_assets
+      end
+    end
+    
+    context 'when retrieving vendor assets' do
+      it 'can retrieve a standalone vendor' do
+        required_assets = ["vendor/javascripts/simple.js"]
+        manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/vendor_retrival.js"
+        
+        main_af.send(:retrieve_assets, manifest).should == required_assets
+      end
+      
+      # TODO think about the importance of order during the requiring.
+      it 'can retrieve vendor that contains multiple files' do
+        # If I write "%w(others index)", this example will fail
+        required_assets = %w(index others).map { |f| "vendor/javascripts/multiple_files/#{ f }.js" }
+        manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/multiple_files_vendor_retrival.js"
+        
+        main_af.send(:retrieve_assets, manifest).should == required_assets
+      end
+      
+      it 'can retrieve vendor that depends on other vendor' do
+        files = %w(multiple_files/index multiple_files/others simple nested)
+        required_assets = files.map { |f| "vendor/javascripts/#{ f }.js" }
+        manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/nested_vendor.js"
+        
+        main_af.send(:retrieve_assets, manifest).should == required_assets
+      end
+    end
+    
+    context 'when retrieving lib assets' do
+      it 'can retrieve a standalone lib' do
+        required_assets = ["lib/javascripts/simple.js"]
+        manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/simple_lib.js"
+        
+        main_af.send(:retrieve_assets, manifest).should == required_assets
+      end
+      
+      it 'can retrieve a multiple-files lib' do
+        # If I write "%w(others index)", this example will fail
+        pending 'make a shared example'
+        required_assets = %w(index others).map { |f| "lib/javascripts/multiple_files/#{ f }.js" }
+        manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/multiple_files_vendor_retrival.js"
+        
+        main_af.send(:retrieve_assets, manifest).should == required_assets
+      end
+      
+      it 'can retrieve lib that depends on a simple vendor' do
+        pending 'need to test vendor first'
+      end
+      
+      it 'can retrieve lib that depends on a multiple-file vendor' do
+        pending 'need to test vendor first'
+      end
+      
+      it 'can retrieve lib that depends on a nested vendor' do
+        pending 'need to test vendor first'
+      end
     end
     
     it 'retrievement with end_of_parsing directive' do
       pending 'unimplemeted'
     end
+  end
+  
+  it 'duplicated requiring' do
+    pending 'to realize after most common functions of this plugin work'
   end
 end
