@@ -19,9 +19,9 @@ module ViewAssets
     #   @action_name = action_name
     #   
     #   # action manifest file
-    #   # controller_path = "#{assets_path}/#{controller_name}/"
-    #   # action_file = "#{controller_path}/#{action_name}.#{asset_extension}"
-    #   # action_index = "#{controller_path}/#{action_name}/index.#{asset_extension}"
+    #   # controller_path = "#{ assets_path }/#{ controller_name }/"
+    #   # action_file = "#{ controller_path }/#{ action_name }.#{ asset_extension }"
+    #   # action_index = "#{ controller_path }/#{ action_name }/index.#{ asset_extension }"
     #   # if FileTest.exist? action_file
     #   #   @manifest_files.push action_file
     #   # elsif FileTest.exist? action_index
@@ -55,7 +55,7 @@ module ViewAssets
     # end
 
     # def app_assets
-    #   Dir.glob("#{assets_path}/app/**/*.#{asset_extension}")
+    #   Dir.glob("#{ assets_path }/app/**/*.#{ asset_extension }")
     # end
     
     # The env assets are assets that will be required before action assets.
@@ -65,8 +65,8 @@ module ViewAssets
     # in /app/assets/[javascripts|stylesheets] folder if:controller.[js|css]
     # in /app/assets/[javascripts|stylesheets]/:controller is not existed.
     def controller_assets
-      application_manifest = "#{root}/#{app_path}/application.#{asset_extension}"
-      controller_manifest = "#{root}/#{app_path}/#{controller_name}.#{asset_extension}"
+      application_manifest = "#{ root }/#{ app_path }/application.#{ asset_extension }"
+      controller_manifest = "#{ root }/#{ app_path }/#{ controller_name }.#{ asset_extension }"
       
       manifest = nil
       manifest = application_manifest if FileTest.exist?(application_manifest)
@@ -81,9 +81,9 @@ module ViewAssets
     # includes all the assets inside this folder. Among these files, a file named
     # index.[js|css] will be taken as manifest file.
     def action_assets
-      action_path = "#{root}/#{app_path}/#{controller_name}"
-      single_action_path = "#{action_path}/#{action_name}.#{asset_extension}"
-      indexed_action_path = "#{action_path}/#{action_name}/index.#{asset_extension}"
+      action_path = "#{ root }/#{ app_path }/#{ controller_name }"
+      single_action_path = "#{ action_path }/#{ action_name }.#{ asset_extension }"
+      indexed_action_path = "#{ action_path }/#{ action_name }/index.#{ asset_extension }"
 
       # find files in the conventional directory
       manifest = nil
@@ -104,8 +104,9 @@ module ViewAssets
         next unless directive.legal_directive?(line)
         assets.concat(analyze(*directive.parse(line)))
       end
-
-      assets
+      
+      # TODO find another way to realize this instead of using "flatten" method
+      assets.flatten
     end
     
     def analyze(asset_category, path_params)
@@ -115,14 +116,18 @@ module ViewAssets
       when 'lib'
         path_params.map { |pp| retrieve_lib_assets(pp) }
       when 'app'
-        path_params.map { |pp| retrieve_app_assets(pp) }
+        path_params.map { |pp| retrieve_app_asset(pp) }
       end
     end
     
     # def retrieve_app_assets(assets)
-    def retrieve_app_assets(manifest)
+    def retrieve_app_asset(required_asset)
       # relatively_pathize(app_path, assets)
-      meta_retrieve(app_path, manifest)
+      # meta_retrieve(app_path, manifest)
+      # manifest_assets = []
+      asset_path = "#{ app_path }#{ required_asset.match(/^\//) ? '' : "/#{ controller_name }" }"
+      # asset = "#{ required_asset }"
+      relatively_pathize(asset_path, required_asset.gsub(/^\//, ''))
     end
     
     def retrieve_vendor_assets(manifest)
@@ -138,11 +143,14 @@ module ViewAssets
     # that isn't the case, finder will try to locate it in
     # vendor|lib/:lib_or_vendor_name and take index.js inside that folder as
     # manifest.
+    # 
+    # NOTE: All assets returned will be "unabsolutely_pathized" here. That
+    #       means each string of file path does not contain any root path info.
     def meta_retrieve(manifest_path, manifest)
       single_file_lib = absolutely_pathize(manifest_path, manifest)
       
-      lib_dir = "#{manifest_path}/#{manifest}"
-      indexing_lib = absolutely_pathize(lib_dir, 'index')
+      manifest_dir = "#{ manifest_path }/#{ manifest }"
+      indexing_lib = absolutely_pathize(manifest_dir, 'index')
       other_files_apart_from_manifest = []
       
       real_manifest = nil
@@ -150,58 +158,58 @@ module ViewAssets
         real_manifest = single_file_lib
       else FileTest.exist?(indexing_lib)
         real_manifest = indexing_lib
-        other_files_apart_from_manifest = retrieve_all_from(lib_dir)
+        all_assets_in_manifest_dir = retrieve_all_from(manifest_dir)
       end
       
       retrieve_assets(real_manifest).flatten
-                                    .concat(other_files_apart_from_manifest)
+                                    .concat(all_assets_in_manifest_dir)
                                     .concat([unabsolutely_pathize(real_manifest)])
                                     .uniq
     end
     
     # TODO add test for dir should be a relative path
     def retrieve_all_from(dir)
-      Dir["#{root}/#{dir}/**/*.#{asset_extension}"].map { |file| unabsolutely_pathize(file) }
+      Dir["#{ root }/#{ dir }/**/*.#{ asset_extension }"].map { |file| unabsolutely_pathize(file) }
     end
     
     def relatively_pathize(asset_dir, asset)
-      "#{asset_dir}/#{asset.match(/\.#{asset_extension}$/) ? asset : "#{asset}.js"}"
+      "#{ asset_dir }/#{ asset.match(/\.#{ asset_extension }$/) ? asset : "#{ asset }.js" }"
     end
     
     # TODO add tests
     def app_path
-      "app/#{assets_path}/#{controller_name}"
+      "app/#{ assets_path }"
     end
     
     # TODO add tests
     def lib_path
-      "lib/#{assets_path}"
+      "lib/#{ assets_path }"
     end
     
     # TODO add tests
     def vendor_path
-      "vendor/#{assets_path}"
+      "vendor/#{ assets_path }"
     end
     
     def absolutely_pathize(asset_dir, asset)
-      "#{root}/#{asset_dir}/#{asset.match(/\.#{asset_extension}$/) ? asset : "#{asset}.js"}"
+      "#{ root }/#{ asset_dir }/#{ asset.match(/\.#{ asset_extension }$/) ? asset : "#{ asset }.js" }"
     end
     
     def unabsolutely_pathize(asset_path)
-      asset_path.gsub(/^#{root}\//, '')
+      asset_path.gsub(/^#{ root }\//, '')
     end
 
     # def complete_paths_of_assets(directive_params, is_tree_directive)
     #   if is_tree_directive  # get all js file names in directory
     #     directive_params = [directive_params] unless directive_params.kind_of? Array
     #     raise ConfigurationError.new("params of require_tree must be a String") unless directive_params.all? { |dp| dp.kind_of? String }
-    #     directive_params.map { |dp| Dir.glob("#{assets_path}/#{dp}/**/*.#{asset_extension}") }
+    #     directive_params.map { |dp| Dir.glob("#{ assets_path }/#{ dp }/**/*.#{ asset_extension }") }
     #   elsif directive_params.last.kind_of? Array  # get target js files in directory
     #     directive_params.last.map { |d|
-    #       "#{assets_path}/#{directive_params.first}/#{d}"
+    #       "#{ assets_path }/#{ directive_params.first }/#{ d }"
     #     }
     #   else  # get a target js files in directory
-    #     [directive_params].flatten.map { |d| "#{assets_path}/#{d}" }
+    #     [directive_params].flatten.map { |d| "#{ assets_path }/#{ d }" }
     #   end
     # end
 
@@ -210,7 +218,7 @@ module ViewAssets
     end
 
     def verify_asset(asset)
-      # raise AssetsMvcError.new("File #{asset} DOEST EXIST") if FileTest.exist?(asset)
+      # raise AssetsMvcError.new("File #{ asset } DOEST EXIST") if FileTest.exist?(asset)
     end
   end
 end
