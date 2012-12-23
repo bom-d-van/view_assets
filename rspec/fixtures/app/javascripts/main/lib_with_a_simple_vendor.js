@@ -1,0 +1,1 @@
+//= require_lib with_a_simple_vendor
