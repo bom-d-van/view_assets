@@ -1,4 +1,12 @@
 Dummy::Application.routes.draw do
+  get "bar/index"
+
+  get "bar/show"
+
+  get "foo/index"
+
+  get "foo/show"
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

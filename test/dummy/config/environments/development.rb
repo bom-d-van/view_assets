@@ -34,4 +34,7 @@ Dummy::Application.configure do
 
   # Expands the lines which load the assets
   config.assets.debug = true
+  
+  # auto-reload plugins
+  config.reload_plugins = true
 end
