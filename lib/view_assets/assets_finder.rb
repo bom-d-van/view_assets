@@ -126,8 +126,8 @@ module ViewAssets
     end
 
     private
-    
-    def retrieve_assets(manifest)
+
+    def retrieve_assets_from(manifest)
       assets = []
       directive = Directive.new(asset_type)
 
@@ -136,11 +136,11 @@ module ViewAssets
         next unless directive.legal_directive?(line)
         assets.concat(analyze(*directive.parse(line)))
       end
-      
+
       # TODO find another way to realize this instead of using "flatten" method
       assets.flatten
     end
-    
+
     def analyze(asset_category, path_params)
       case asset_category
       when 'vendor'
