@@ -1,14 +1,14 @@
+##
 # Manifest file is a file that contains some dependency directives on top
 # of it. Finder will parse these directives if existed and include them
 # in the html.
-# Usually, the first manifest file will be application.[js|css] in 
+# Usually, the first manifest file will be application.[js|css] in
 # /app/assets/[javascripts|stylesheets] folder. However, if there is a
 # :controller.[js|css] file existed in /app/assets/:controller folder,
-# then it will replace application as the first manifest file. 
+# then it will replace application as the first manifest file.
 # It will append assets dependency before every action assets.
 # If both application and :controller manifest file are not existed,
 # then the manifest file list will be empty at first.
-
 module ViewAssets
   # It's an abstract class.
   class AssetsFinder < Struct.new(:root, :controller_name, :action_name)
