@@ -64,6 +64,17 @@ module ViewAssets
       @retrieved
     end
     
+    ##
+    # Check out whether all assets is existed or not
+    # It is better to be turned off in production
+    def verify
+      all_assets.each do |asset| 
+        asset_file = absolutely_pathize(asset)
+        raise AssetNotFound.new("File #{ asset } DOEST EXIST") if FileTest.exist?(asset_file)
+      end
+    end
+
+    ##
     # The env assets are assets that will be required before action assets.
     # The function of env assets is to allow user to require some assets
     # that would be used throughout the whole application or controller.
