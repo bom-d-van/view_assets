@@ -10,32 +10,15 @@
 # If both application and :controller manifest file are not existed,
 # then the manifest file list will be empty at first.
 module ViewAssets
+  ##
   # It's an abstract class.
   class AssetsFinder < Struct.new(:root, :controller_name, :action_name)
-    # attr_reader :root, :controller_name, :action_name
-    # def initialize(root, controller_name, action_name)
-    #   @root = root
-    #   @controller_name = controller_name
-    #   @action_name = action_name
-    #   
-    #   # action manifest file
-    #   # controller_path = "#{ assets_path }/#{ controller_name }/"
-    #   # action_file = "#{ controller_path }/#{ action_name }.#{ asset_extension }"
-    #   # action_index = "#{ controller_path }/#{ action_name }/index.#{ asset_extension }"
-    #   # if FileTest.exist? action_file
-    #   #   @manifest_files.push action_file
-    #   # elsif FileTest.exist? action_index
-    #   #   @manifest_files.push action_index
-    #   # end
-    # end
     
-    # This method is the ENTRY of assets finder after its initializtion.
-    # It returns all asset paths wrapped inside a appropriated html 
-    # tag(`script` | `link`).
-    def all
-      all_untagged_assets.map do |asset|
-        tag unabsolutize_asset_path(asset) # should be realized in a subclass
-      end
+    def initialize(*args)
+      @all_assets = []
+      @retrieved = false
+      
+      super(*args)
     end
     
     # tag method should be overrided by subclass
