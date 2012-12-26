@@ -21,25 +21,48 @@ module ViewAssets
       super(*args)
     end
     
+    # todo try to figure out what really is DUCK TYPING
     # tag method should be overrided by subclass
     # def tag
     #   raise UnimplementedError.new "tag method is unimplemented."
     # end
-    
-    # untagged => hasn't been wrapped inside a appropriated html tag like 
+
+    ##
+    # This method is the ENTRY of assets finder after its initializtion.
+    # It returns all asset paths wrapped inside a appropriated html
+    # tag(`script` | `link`).
+    def all
+      all_assets.map { |asset| tag asset } # tag should be realized in a subclass
+    end
+
+    ##
+    # get all the asset paths in full path
+    # TODO realize this method
+    def full
+      all_assets.map { |asset| absolutely_pathize(asset) }
+    end
+
+    ##
+    # "untagged" means hasn't been wrapped inside a appropriated html tag like
     # `script` or `link`
-    def all_untagged_assets
-      # TODO it just feel so weird to verify your asset in a GET method
-      @all_assets ||= app_assets.concat(action_assets).map { |a| verify_asset(a); a }
+    def all_assets
+      retrieve unless retrieved?
+
+      verify if TO_VERIFY
+      
+      @all_assets
     end
     
-    # def root_path
-    #   Rails.public_path
-    # end
-
-    # def app_assets
-    #   Dir.glob("#{ assets_path }/app/**/*.#{ asset_extension }")
-    # end
+    # TODO document
+    def retrieve
+      @all_assets = controller_assets.concat(action_assets).uniq if @all_assets.empty?
+      @retrieved = true
+    end
+    
+    # TODO document
+    def retrieved?
+      @retrieved
+    end
     
     # The env assets are assets that will be required before action assets.
     # The function of env assets is to allow user to require some assets
