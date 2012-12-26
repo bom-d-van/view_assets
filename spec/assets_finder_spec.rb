@@ -4,6 +4,8 @@ describe AssetsFinder do
   let(:empty_af) { AssetsFinder.new('', '', '') }
   let(:simple_af) { AssetsFinder.new(FIXTURE_ROOT, '', '') }
   let(:main_af) { AssetsFinder.new(FIXTURE_ROOT, 'main', '') }
+  let(:action_test_af) { AssetsFinder.new(FIXTURE_ROOT, 'main', 'action_test') }
+  let(:action_test_assets) { %w(vendor/javascripts/simple.js lib/javascripts/simple.js app/javascripts/another_controller/action1.js app/javascripts/main/action_test.js) }
   
   before(:each) do
     AssetsFinder.any_instance.stub(:asset_extension).and_return('js')
@@ -13,7 +15,7 @@ describe AssetsFinder do
   
   describe 'path string manipulation' do
     it '#absolutely_pathize' do
-      simple_af.send(:absolutely_pathize, 'path', 'file').should == "#{ FIXTURE_ROOT }/path/file.js"
+      simple_af.send(:absolutely_pathize, 'path/file').should == "#{ FIXTURE_ROOT }/path/file.js"
     end
 
     it '#unabsolutely_pathize' do
@@ -31,7 +33,7 @@ describe AssetsFinder do
     end
   end
   
-  context '#retrieve_app_asset' do
+  describe '#retrieve_app_asset' do
     it 'can retrieve asset of other actions in the same controller' do
       asset = "app/javascripts/main/multiple_files_action/others.js"
       
@@ -87,76 +89,92 @@ describe AssetsFinder do
     pending 'unimplemeted'
   end
   
-  describe '#retrieve_assets' do
+  describe '#retrieve_assets_from' do
     context 'when retrieving app assets from actions' do
       it 'in the same controller' do
         required_assets = ["app/javascripts/main/multiple_files_action/others.js"]
         app_manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/retrieving_from_another_action.js"
         
-        main_af.send(:retrieve_assets, app_manifest).should == required_assets
+        main_af.send(:retrieve_assets_from, app_manifest).should == required_assets
       end
       
       it 'from a different controller' do
         required_assets = ["app/javascripts/another_controller/another_multiple_files_action/others.js"]
         app_manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/retrieving_from_another_controller.js"
         
-        main_af.send(:retrieve_assets, app_manifest).should == required_assets
+        main_af.send(:retrieve_assets_from, app_manifest).should == required_assets
+      end
+    end
+    
+    shared_examples 'retrievable' do |type|
+      it "can retrieve a standalone #{ type }" do
+        required_assets = ["#{ type }/javascripts/simple.js"]
+        manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/simple_#{ type }.js"
+        
+        main_af.send(:retrieve_assets_from, manifest).should == required_assets
+      end
+    
+      # # TODO think about the importance of order during the requiring.
+      # # If I write "%w(others index)", this example will fail
+      it "can retrieve a multiple-files #{ type }" do
+        required_assets = %w(index others).map { |f| "#{ type }/javascripts/multiple_files/#{ f }.js" }
+        manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/multiple_files_#{ type }.js"
+        
+        main_af.send(:retrieve_assets_from, manifest).should == required_assets
+      end
+      
+      it "can retrieve vendor that depends on other #{ type }" do
+        required_assets = %w(multiple_files/index multiple_files/others simple nested).map { |f| "#{ type }/javascripts/#{ f }.js" }
+        manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/nested_#{ type }.js"
+        
+        main_af.send(:retrieve_assets_from, manifest).should == required_assets
+      end
+      
+      it "can retrieve deeply nested #{ type }" do
+        required_assets = %w(multiple_files/index multiple_files/others simple nested complicated_nested).map { |f| "#{ type }/javascripts/#{ f }.js" }
+        manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/complicated_nested_#{ type }.js"
+        
+        main_af.send(:retrieve_assets_from, manifest).should == required_assets
+      end
+      
+      it "can retrieve multiple-files and deeply-nested #{ type }" do
+        required_assets = %w(multiple_files/index multiple_files/others simple nested complicated_nested  to_be_required multiple_files_with_nested/index multiple_files_with_nested/others).map { |f| "#{ type }/javascripts/#{ f }.js" }
+        manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/multiple_files_with_nested_#{ type }.js"
+        
+        main_af.send(:retrieve_assets_from, manifest).should == required_assets
       end
     end
     
     context 'when retrieving vendor assets' do
-      it 'can retrieve a standalone vendor' do
-        required_assets = ["vendor/javascripts/simple.js"]
-        manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/vendor_retrival.js"
-        
-        main_af.send(:retrieve_assets, manifest).should == required_assets
-      end
-      
-      # TODO think about the importance of order during the requiring.
-      it 'can retrieve vendor that contains multiple files' do
-        # If I write "%w(others index)", this example will fail
-        required_assets = %w(index others).map { |f| "vendor/javascripts/multiple_files/#{ f }.js" }
-        manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/multiple_files_vendor_retrival.js"
-        
-        main_af.send(:retrieve_assets, manifest).should == required_assets
-      end
-      
-      it 'can retrieve vendor that depends on other vendor' do
-        files = %w(multiple_files/index multiple_files/others simple nested)
-        required_assets = files.map { |f| "vendor/javascripts/#{ f }.js" }
-        manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/nested_vendor.js"
-        
-        main_af.send(:retrieve_assets, manifest).should == required_assets
-      end
+      it_should_behave_like 'retrievable', 'vendor'
     end
     
     context 'when retrieving lib assets' do
-      it 'can retrieve a standalone lib' do
-        required_assets = ["lib/javascripts/simple.js"]
-        manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/simple_lib.js"
-        
-        main_af.send(:retrieve_assets, manifest).should == required_assets
-      end
+      it_should_behave_like 'retrievable', 'lib'
       
-      it 'can retrieve a multiple-files lib' do
-        # If I write "%w(others index)", this example will fail
-        pending 'make a shared example'
-        required_assets = %w(index others).map { |f| "lib/javascripts/multiple_files/#{ f }.js" }
-        manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/multiple_files_vendor_retrival.js"
-        
-        main_af.send(:retrieve_assets, manifest).should == required_assets
-      end
-      
-      it 'can retrieve lib that depends on a simple vendor' do
-        pending 'need to test vendor first'
-      end
-      
-      it 'can retrieve lib that depends on a multiple-file vendor' do
-        pending 'need to test vendor first'
-      end
-      
-      it 'can retrieve lib that depends on a nested vendor' do
-        pending 'need to test vendor first'
+      context 'when depending on a vendor' do
+        it 'can depends on a simple vendor' do
+          required_assets = %w(vendor/javascripts/simple.js lib/javascripts/with_a_simple_vendor.js)
+          manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/lib_with_a_simple_vendor.js"
+
+          main_af.send(:retrieve_assets_from, manifest).should == required_assets
+        end
+
+        it 'can depends on a multiple-file vendor' do
+          required_assets = %w(vendor/javascripts/multiple_files/index.js vendor/javascripts/multiple_files/others.js lib/javascripts/with_a_multiple_files_vendor.js)
+          manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/lib_with_a_multiple_files_vendor.js"
+
+          main_af.send(:retrieve_assets_from, manifest).should == required_assets
+        end
+
+        # TODO cosider whether this example is really necessary
+        # it 'can depends on a complicated and nested vendor' do
+        #   pending 'something else'
+        #   required_assets = %w(vendor/javascripts/multiple_files/index.js vendor/javascripts/multiple_files/others.js lib/javascripts/with_a_multiple_files_vendor.js)
+        #   manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/lib_with_a_multiple_files_vendor.js"
+        # 
+        #   main_af.send(:retrieve_assets_from, manifest).should == required_assets
+        # end
       end
     end
     
@@ -167,5 +185,55 @@ describe AssetsFinder do
   
   it 'duplicated requiring' do
     pending 'to realize after most common functions of this plugin work'
+  end
+  
+  describe '#action_assets' do
+    context 'when retrieving assets' do
+      let(:action_assets) { action_test_af.action_assets }
+      it 'can retrieve required assets' do
+        action_assets.should == action_test_assets
+      end
+
+      it 'require action manifest as the last element' do
+        action_assets.last.should == 'app/javascripts/main/action_test.js'
+      end
+    end
+    
+    it 'should cache the assets after the first time of retrieval' do
+      action_test_af.action_assets.object_id.should == action_test_af.action_assets.object_id
+    end
+  end
+  
+  describe '#controller_assets' do
+    context 'when retrieving assets' do
+      it 'will use application.js as default controller asset setup' do
+        required_assets = %w(lib/javascripts/simple.js vendor/javascripts/simple.js app/javascripts/application.js)
+        
+        main_af.controller_assets.should == required_assets
+      end
+      
+      it 'will use specific controller asset setup as there is one' do
+        required_assets = %w(vendor/javascripts/to_be_required.js lib/javascripts/to_be_required.js app/javascripts/another_controller/another_controller.js)
+        af = AssetsFinder.new(FIXTURE_ROOT, 'another_controller', '')
+        
+        af.controller_assets.should == required_assets
+      end
+    end
+  end
+  
+  describe '#all_assets' do
+    it 'retrieve controller assets before action assets' do
+      af = AssetsFinder.new(FIXTURE_ROOT, 'main', 'all_assets')
+      required_assets = %w(lib/javascripts/simple.js vendor/javascripts/simple.js app/javascripts/application.js app/javascripts/main/multiple_files_action/others.js app/javascripts/main/all_assets.js)
+      
+      af.all_assets.should == required_assets
+    end
+    
+    it 'pluck all the repetitive assets' do
+      af = AssetsFinder.new(FIXTURE_ROOT, 'main', 'all_assets_with_repetitive_requiring')
+      required_assets = %w(lib/javascripts/simple.js vendor/javascripts/simple.js app/javascripts/application.js app/javascripts/main/all_assets_with_repetitive_requiring.js)
+      
+      af.all_assets.should == required_assets
+    end
   end
 end
