@@ -151,40 +151,36 @@ module ViewAssets
         path_params.map { |pp| retrieve_app_asset(pp) }
       end
     end
-    
-    # def retrieve_app_assets(assets)
+
     def retrieve_app_asset(required_asset)
-      # relatively_pathize(app_path, assets)
-      # meta_retrieve(app_path, manifest)
-      # manifest_assets = []
       asset_path = "#{ app_path }#{ required_asset.match(/^\//) ? '' : "/#{ controller_name }" }"
-      # asset = "#{ required_asset }"
+      
       relatively_pathize(asset_path, required_asset.gsub(/^\//, ''))
     end
-    
+
     def retrieve_vendor_assets(manifest)
       meta_retrieve(vendor_path, manifest)
     end
-    
+
     def retrieve_lib_assets(manifest)
       meta_retrieve(lib_path, manifest)
     end
-    
+
     # for lib and vendor assets, finder will assume that it was stored in the
     # root of vendor|lib and the file itself is a manifest file at first. If
     # that isn't the case, finder will try to locate it in
     # vendor|lib/:lib_or_vendor_name and take index.js inside that folder as
     # manifest.
-    # 
+    #
     # NOTE: All assets returned will be "unabsolutely_pathized" here. That
     #       means each string of file path does not contain any root path info.
     def meta_retrieve(manifest_path, manifest)
-      single_file_lib = absolutely_pathize(manifest_path, manifest)
-      
+      single_file_lib = absolutely_pathize("#{ manifest_path }/#{ manifest }")
+
       manifest_dir = "#{ manifest_path }/#{ manifest }"
-      indexing_lib = absolutely_pathize(manifest_dir, 'index')
-      other_files_apart_from_manifest = []
-      
+      indexing_lib = absolutely_pathize("#{ manifest_dir }/index")
+      all_assets_in_manifest_dir = []
+
       real_manifest = nil
       if FileTest.exist?(single_file_lib)
         real_manifest = single_file_lib
@@ -192,43 +188,35 @@ module ViewAssets
         real_manifest = indexing_lib
         all_assets_in_manifest_dir = retrieve_all_from(manifest_dir)
       end
-      
-      retrieve_assets(real_manifest).flatten
+
+      retrieve_assets_from(real_manifest).flatten
                                     .concat(all_assets_in_manifest_dir)
                                     .concat([unabsolutely_pathize(real_manifest)])
                                     .uniq
     end
-    
+
     # TODO add test for dir should be a relative path
     def retrieve_all_from(dir)
       Dir["#{ root }/#{ dir }/**/*.#{ asset_extension }"].map { |file| unabsolutely_pathize(file) }
     end
-    
+
     def relatively_pathize(asset_dir, asset)
       "#{ asset_dir }/#{ asset.match(/\.#{ asset_extension }$/) ? asset : "#{ asset }.js" }"
     end
-    
+
     # TODO add tests
     def app_path
       "app/#{ assets_path }"
     end
-    
+
     # TODO add tests
     def lib_path
       "lib/#{ assets_path }"
     end
-    
+
     # TODO add tests
     def vendor_path
       "vendor/#{ assets_path }"
-    end
-    
-    def absolutely_pathize(asset_dir, asset)
-      "#{ root }/#{ asset_dir }/#{ asset.match(/\.#{ asset_extension }$/) ? asset : "#{ asset }.js" }"
-    end
-    
-    def unabsolutely_pathize(asset_path)
-      asset_path.gsub(/^#{ root }\//, '')
     end
 
     # def complete_paths_of_assets(directive_params, is_tree_directive)
