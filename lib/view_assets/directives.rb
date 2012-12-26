@@ -2,7 +2,9 @@ module ViewAssets
   class Directive
     attr_reader :asset_type
     def initialize(asset_type)
-      raise ConfigurationError.new('asset type should be "js" or "css"') unless %w(css js).include?(asset_type)
+      # TODO find out asset_types that can run in both directive.rb and asset_finders
+      # raise ConfigurationError.new('asset type should be "js" or "css"') unless %w(css js).include?(asset_type)
+      raise ConfigurationError.new('asset type should be "javascript" or "stylesheet"') unless %w(javascript stylesheet).include?(asset_type)
       @asset_type = asset_type
     end
     
@@ -48,6 +50,7 @@ module ViewAssets
       path_params = would_be_path_params unless would_be_path_params.empty?
       
       # unknown_directive ? [nil, nil] : [asset_root, path_params.strip.split(/,\s?/)]
+      # todo add rspec examples for returning a ['', []] when the primitive_params is illegal
       [asset_root, path_params]
     end
     
