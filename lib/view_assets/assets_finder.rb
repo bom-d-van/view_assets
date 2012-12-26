@@ -82,22 +82,33 @@ module ViewAssets
     # in /app/assets/[javascripts|stylesheets] folder if:controller.[js|css]
     # in /app/assets/[javascripts|stylesheets]/:controller is not existed.
     def controller_assets
-      application_manifest = "#{ root }/#{ app_path }/application.#{ asset_extension }"
-      controller_manifest = "#{ root }/#{ app_path }/#{ controller_name }.#{ asset_extension }"
+      return @controller_assets unless @controller_assets.nil?
       
+      @controller_assets = []
+      application_manifest = "#{ root }/#{ app_path }/application.#{ asset_extension }"
+      controller_manifest = "#{ root }/#{ app_path }/#{ controller_name }/#{ controller_name }.#{ asset_extension }"
+
       manifest = nil
       manifest = application_manifest if FileTest.exist?(application_manifest)
       manifest = controller_manifest if FileTest.exist?(controller_manifest)
       
-      manifest.nil? ? [] : retrieve_assets(manifest)
+      # TODO add rspec example
+      return @controller_assets if manifest.nil?
+
+      @controller_assets = manifest.nil? ? [] : retrieve_assets_from(manifest)
+      @controller_assets << unabsolutely_pathize(manifest)
     end
-    
+
+    ##
     # If the action assets is only a file, finder will also consider it a
     # manifest file.
     # If the action assets is a foler consisting several asset files, finder will
     # includes all the assets inside this folder. Among these files, a file named
     # index.[js|css] will be taken as manifest file.
     def action_assets
+      return @action_assets unless @action_assets.nil?
+      
+      @action_assets = []
       action_path = "#{ root }/#{ app_path }/#{ controller_name }"
       single_action_path = "#{ action_path }/#{ action_name }.#{ asset_extension }"
       indexed_action_path = "#{ action_path }/#{ action_name }/index.#{ asset_extension }"
@@ -106,8 +117,12 @@ module ViewAssets
       manifest = nil
       manifest = single_action_path if FileTest.exist?(single_action_path)
       manifest = indexed_action_path if FileTest.exist?(indexed_action_path)
-      
-      manifest.nil? ? [] : retrieve_assets(manifest)
+
+      # TODO add rspec example
+      return @action_assets if manifest.nil?
+
+      @action_assets = manifest.nil? ? [] : retrieve_assets_from(manifest)
+      @action_assets << unabsolutely_pathize(manifest)
     end
 
     private
