@@ -1,8 +1,9 @@
 module ViewAssets
+  # TODO add rspec examples
   class JavascriptAssets < AssetsFinder
     def assets_path
-      # "#{root_path}/javascripts"
-      'assets/javascripts'
+      # 'assets/javascripts'
+      'javascripts'
     end
     
     def asset_extension
