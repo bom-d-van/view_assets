@@ -1,11 +1,17 @@
 module ViewAssets
+  # TODO add rspec examples
   class StyleSheetAssets < AssetsFinder
     def assets_path
-      "#{root_path}/stylesheets"
+      # 'assets/javascripts'
+      'stylesheets'
     end
     
     def asset_extension
       'css'
+    end
+    
+    def asset_type
+      'stylesheet'
     end
     
     def tag(css_href)
