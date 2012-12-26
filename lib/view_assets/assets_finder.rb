@@ -219,26 +219,14 @@ module ViewAssets
       "vendor/#{ assets_path }"
     end
 
-    # def complete_paths_of_assets(directive_params, is_tree_directive)
-    #   if is_tree_directive  # get all js file names in directory
-    #     directive_params = [directive_params] unless directive_params.kind_of? Array
-    #     raise ConfigurationError.new("params of require_tree must be a String") unless directive_params.all? { |dp| dp.kind_of? String }
-    #     directive_params.map { |dp| Dir.glob("#{ assets_path }/#{ dp }/**/*.#{ asset_extension }") }
-    #   elsif directive_params.last.kind_of? Array  # get target js files in directory
-    #     directive_params.last.map { |d|
-    #       "#{ assets_path }/#{ directive_params.first }/#{ d }"
-    #     }
-    #   else  # get a target js files in directory
-    #     [directive_params].flatten.map { |d| "#{ assets_path }/#{ d }" }
-    #   end
-    # end
-
-    def unabsolutize_asset_path(asset_path)
-      asset_path.partition('public')[2]
+    # todo document
+    def absolutely_pathize(asset_path)
+      "#{ root }/#{ asset_path.match(/\.#{ asset_extension }$/) ? asset_path : "#{ asset_path }.js" }"
     end
 
-    def verify_asset(asset)
-      # raise AssetsMvcError.new("File #{ asset } DOEST EXIST") if FileTest.exist?(asset)
+    # todo document
+    def unabsolutely_pathize(asset_path)
+      asset_path.gsub(/^#{ root }\//, '')
     end
   end
 end
