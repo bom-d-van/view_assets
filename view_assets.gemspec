@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.summary     = "A new method to manage assets in a rails project."
   s.description = "Instead of using the default assets managing style in rails 3.2, this gem will introduce a new way to manage your assets. This is still a prototype, the fullfledged version will publish soon."
 
-  s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.rdoc"]
+  s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "readme.md"]
   s.test_files = Dir["test/**/*"]
 
   s.add_dependency "rails", "~> 3.2.8"
