@@ -1,6 +1,10 @@
 ##
 # TODO documentation
 module ViewAssets
+  # todo figure out why can't use require in this case
+  # todo find another way to include rake tasks, this method seems weird.
+  load 'tasks/view_assets_tasks.rake' if defined?(Rake)
+  
   require 'pathname'
 
   require 'view_assets/error'

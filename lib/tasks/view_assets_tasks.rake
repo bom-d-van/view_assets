@@ -3,8 +3,6 @@
 #   # Task goes here
 # end
 
-# todo make a rake tasks to establish the assets tree in public folder
-
 namespace :view_assets do
   desc "Init view_assets framework"
   task :init do
