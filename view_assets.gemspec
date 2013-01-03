@@ -7,11 +7,11 @@ require "view_assets/version"
 Gem::Specification.new do |s|
   s.name        = "view_assets"
   s.version     = ViewAssets::VERSION
-  s.authors     = ["TODO: Your name"]
-  s.email       = ["TODO: Your email"]
-  s.homepage    = "TODO"
-  s.summary     = "TODO: Summary of ViewAssets."
-  s.description = "TODO: Description of ViewAssets."
+  s.authors     = ["Van Hu"]
+  s.email       = ["bom.d.van@gmail.com"]
+  s.homepage    = "https://github.com/bom-d-van/view_assets"
+  s.summary     = "A new method to manage assets in a rails project."
+  s.description = "Instead of using the default assets managing style in rails 3.2, this gem will introduce a new way to manage your assets. This is still a prototype, the fullfledged version will publish soon."
 
   s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.rdoc"]
   s.test_files = Dir["test/**/*"]
