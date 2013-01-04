@@ -15,7 +15,7 @@ module ViewAssets
     end
     
     def tag(js_src)
-      "<script src='#{js_src}'></script>"
+      %(<script src="#{js_src}" type="text/javascript"></script>)
     end
   end
 end
