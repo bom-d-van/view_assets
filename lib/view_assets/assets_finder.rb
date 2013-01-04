@@ -32,7 +32,8 @@ module ViewAssets
     # It returns all asset paths wrapped inside a appropriated html
     # tag(`script` | `link`).
     def all
-      all_assets.map { |asset| tag asset } # tag should be realized in a subclass
+      # todo remove this quick fix used for adding a leading slash to make 
+      all_assets.map { |asset| tag "/#{asset}" } # tag should be realized in a subclass
     end
 
     ##
@@ -127,6 +128,7 @@ module ViewAssets
 
     private
 
+    # start point of parsing dependent assets
     def retrieve_assets_from(manifest)
       assets = []
       directive = Directive.new(asset_type)
@@ -134,6 +136,7 @@ module ViewAssets
       Pathname.new(manifest).each_line do |line|
         # break if directive.ending_directive?(l) # TODO add ending_directive support
         next unless directive.legal_directive?(line)
+        
         assets.concat(analyze(*directive.parse(line)))
       end
 
@@ -201,7 +204,7 @@ module ViewAssets
     end
 
     def relatively_pathize(asset_dir, asset)
-      "#{ asset_dir }/#{ asset.match(/\.#{ asset_extension }$/) ? asset : "#{ asset }.js" }"
+      "#{ asset_dir }/#{ asset.match(/\.#{ asset_extension }$/) ? asset : "#{ asset }.#{ asset_extension }" }"
     end
 
     # TODO add tests
@@ -221,7 +224,7 @@ module ViewAssets
 
     # todo document
     def absolutely_pathize(asset_path)
-      "#{ root }/#{ asset_path.match(/\.#{ asset_extension }$/) ? asset_path : "#{ asset_path }.js" }"
+      "#{ root }/#{ asset_path.match(/\.#{ asset_extension }$/) ? asset_path : "#{ asset_path }.#{ asset_extension }" }"
     end
 
     # todo document
