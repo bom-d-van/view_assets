@@ -83,11 +83,36 @@ manifest file 指的是用于声明文件依赖的文件，**只有在这个文�
 * `require_lib` 会在 lib 文件夹中寻找目的资源    
 * `require` 会在 app 文件夹中寻找目的资源   
 
+对于 `require` 指令，AV 主要提供的是对同一个 controller 下和不同 controller 下的资源进行加载，这些文件都不会被视为 manifest file，所以不会对其进行解析。
+
+加载同一个 controller 的资源时，参数不要包含 controller 名字以及不能以 `/` 开头，任何以 `/` 开头的参数在 `require` 中会视为加载其他 controller 文件。
+
+`require path/to/file`
+
+加载不同 controller 的资源时
+
+`require /other_controller/path/to/file`
+
+## Arguments/Path
+
+在 Directive 后跟着的依赖的参数。如：
+
+```js
+/**
+ * require_vendor vendor1, vendor2        => <script src="/vendor/javascripts/vendor1.js" type="text/javascript"></script>
+ *                                           <script src="/vendor/javascripts/vendor2.js" type="text/javascript"></script>
+ *
+ * require_lib lib1                       => <script src="/lib/javascripts/lib1.js" type="text/javascript"></script>
+ * require_lib lib2                       => <script src="/lib/javascripts/lib2.js" type="text/javascript"></script>
+ * require /other_controller/path/to/file => <script src="/app/javascripts/other_controller/path/to/tile.js" type="text/javascript"></script>
+ */
+```
+
 ## Usage
 
 在 Gemfile 中添加下面的代码：
 
-gem 'view_assets'
+`gem 'view_assets'`
 
 接下来，需要在 `/app/helpers/application_helper.rb` include `ViewAssets`。
 
