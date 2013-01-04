@@ -1,7 +1,7 @@
 # ViewAssets
 ViewAssets(VA) 是一个简单的 Javascript, Stylesheets 依赖管理器。 根据 Rails 3.2 中的 asset pipeline，它会默认加载所有的 assets 资源，这样其实对于富 JS 应用而言并不是特别有利。因为每个页面有可能都包含着大量其它页面都需要用到的文件资源。VA 就是为了解决这个问题而提出来的。它支持每个页面都能够加载自己需要的 assets 资源，同时也保留了 assets pipeline 自动处理依赖的优点。   
 
-简单的概括这个 gem 就是它将在 view 中 *.html.erb 中声明的依赖转移到 js/css 文件中。在特定的文件(manifest file)中使用规定的语法声明(directives)依赖。   
+简单的概括这个 gem 就是它将在 view 中 *.html.erb 中声明的依赖转移到 js/css 文件中。在特定的文件(manifest file)中使用规定的语法(directive)声明依赖。   
 
 ## Conventions/Rules
 
@@ -64,7 +64,7 @@ manifest file 指的是用于声明文件依赖的文件，**只有在这个文�
 
 在开发过程中并不一定要使用 manifest file，要注意的是如果有特别依赖要声明的时候，要声明于该文件中，这样 VA 才能正确的为你关联好依赖。
 
-## DIRECTIVES
+## DIRECTIVE
 
 同样，VA 也可以在文件中声明依赖，声明的规则基本业余 pipeline 相似。js 中支持三种声明方式，css 中支持两种。
 
@@ -79,30 +79,15 @@ manifest file 指的是用于声明文件依赖的文件，**只有在这个文�
 
 上面列出的三种声明方式，而声明指令也有三个，分别是：
 
-* `require_vendor`
-* `require_lib`
-* `require`
+* `require_vendor` 会在 vendor 文件夹中寻找目的资源   
+* `require_lib` 会在 lib 文件夹中寻找目的资源    
+* `require` 会在 app 文件夹中寻找目的资源   
 
-`require_vendor` 会加载 vendor 文件夹中的资源   
-`require_lib` 会加载 lib1 文件夹中的资源    
-`require` 会加载 app 文件夹中的资源   
-
-<!-- ### App
-
-VA 是按照一下的方式处理依赖的：   
-
-1. VA 会根据请求的 `controller` 以及 `action` 定位资源位置
-2. VA 首先会判断在 `/app/javascripts/:controller/:controller.js` 以及 `/app/stylesheets/:controller/:controller.css` 是否存在，如果不存在，则会加载 `/app/javascripts/application.js` 以及 `/app/stylesheets/application.css` 这两个资源。（注意 `:controller` 是可变的，它根据请求而定）
-3. 在判断 `controller` 级别的资源后，接下来 VA 会加载页面级资源，规则如下：
-  1. VA 先判断是否存在 /app/javascripts/:controller/:action.js 文件是否存在，如果不存在，则再判断 /app/javascripts/:controller/:action/index.js 文件是否存。
-  
-### Index rules of vendor & lib
- -->
 ## Usage
 
 在 Gemfile 中添加下面的代码：
 
-    `gem 'view_assets'`
+gem 'view_assets'
 
 接下来，需要在 `/app/helpers/application_helper.rb` include `ViewAssets`。
 
