@@ -177,6 +177,7 @@ module ViewAssets
     #
     # NOTE: All assets returned will be "unabsolutely_pathized" here. That
     #       means each string of file path does not contain any root path info.
+    # todo BUG => can't retrieve assets with slash-asterisk(/*= xxx */) directive.
     def meta_retrieve(manifest_path, manifest)
       single_file_lib = absolutely_pathize("#{ manifest_path }/#{ manifest }")
 

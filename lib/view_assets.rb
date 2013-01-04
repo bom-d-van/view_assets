@@ -1,10 +1,10 @@
 ##
-# TODO documentation
+# Introduction is in readme.md
 module ViewAssets
-  # todo figure out why can't use require in this case
-  # todo find another way to include rake tasks, this method seems weird.
+  # TODO figure out why can't use require in this case
+  # TODO find another way to include rake tasks, this method seems weird.
   load 'tasks/view_assets_tasks.rake' if defined?(Rake)
-  
+
   require 'pathname'
 
   require 'view_assets/error'
@@ -16,16 +16,16 @@ module ViewAssets
   ##
   # To verify all assets and throw exception when find out inexistent asset
   # Defaults to turn off. DO NOT use it in production.
-  # todo find out how to document constant
+  # TODO find out how to document constant.
   TO_VERIFY = false
-  
+
   attr_accessor :js_assets, :css_assets
-  
-  # TODO need a new controller-action configuring interface, try to configure them in helper instead of view files
+
+  # TODO need a new controller-action configuring interface, try to configure them in helper instead of view files.
   def include_assets_with_assets_mvc(controller, action)
     @va_controller = controller
     @va_action = action
-    
+
     raw [css_assets.all, js_assets.all].flatten.uniq.join("\n ")
   end
 
