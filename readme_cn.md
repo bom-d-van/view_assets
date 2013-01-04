@@ -3,7 +3,110 @@ ViewAssets(VA) 是一个简单的 Javascript, Stylesheets 依赖管理器。 根
 
 简单的概括这个 gem 就是它将在 view 中 *.html.erb 中声明的依赖转移到 js/css 文件中。在特定的文件(manifest file)中使用规定的语法(directive)声明依赖。   
 
-## Conventions/Rules
+## Example
+
+下面的目录是一个 rails 项目的 public 文件夹。
+
+    .
+    ├── 404.html
+    ├── 422.html
+    ├── 500.html
+    ├── app
+    │   ├── javascripts
+    │   │   ├── application.js
+    │   │   ├── bar
+    │   │   │   ├── index
+    │   │   │   │   ├── index.js
+    │   │   │   │   └── others.js
+    │   │   │   └── show.js
+    │   │   └── foo
+    │   │       ├── foo.js
+    │   │       ├── index
+    │   │       │   ├── index.js
+    │   │       │   └── others.js
+    │   │       └── show.js
+    │   └── stylesheets
+    │       ├── application.css
+    │       ├── bar
+    │       │   ├── index
+    │       │   │   ├── index.css
+    │       │   │   └── others.css
+    │       │   └── show.css
+    │       └── foo
+    │           ├── foo.css
+    │           ├── index
+    │           │   ├── index.css
+    │           │   └── others.css
+    │           └── show.css
+    ├── favicon.ico
+    ├── lib
+    │   ├── javascripts
+    │   │   ├── lib1.js
+    │   │   └── lib2.js
+    │   └── stylesheets
+    │       ├── lib1.css
+    │       └── lib2.css
+    └── vendor
+        ├── javascripts
+        │   ├── vendor1.js
+        │   └── vendor2.js
+        └── stylesheets
+            ├── vendor1.css
+            └── vendor2.css
+
+有如下的依赖声明：
+
+/vendor/javascripts/vendor1.js
+
+```js
+//= require_vendor vendor2
+```
+
+/lib/javascripts/lib1.js
+
+```js
+//= require_vendor lib2
+```
+
+/app/javascripts/application.js
+
+```js
+/**
+ *= require_vendor vendor1
+ *= require_lib lib1
+ */
+```
+
+/app/javascripts/bar/show.js
+
+```js
+//= reuquire index/others.js
+```
+
+当访问 `bar/show`(比如：`localhost:3000/bar/show`) 时，可以看到在其 `html` 文件中的 `head` 有下面的几个 `script` 自动插入了：
+
+    <script src="vendor2.js" type="text/javascript"></script>
+    <script src="vendor1.js" type="text/javascript"></script>
+    <script src="lib2.js" type="text/javascript"></script>
+    <script src="lib1.js" type="text/javascript"></script>
+    <script src="application.js" type="text/javascript"></script>
+    <script src="index/others.js" type="text/javascript"></script>
+
+<!-- 假设你有一个 controller 名为 foo，有一个 action 为 index，这个页面里你需要加载三个 js 资源，分别为 asset1,js, asset2.js, asset3.js，且他们都存放在 /public/app/javascripts/foo/index 文件夹中，在你的 view 文件中，你可能按如下方式声明：
+
+/app/views/foo/index.html.erb
+
+```ruby
+  <%= javascript_include_tag '/app/javascripts/foo/index/asset1', '/app/javascripts/foo/index/asset2', '/app/javascripts/foo/index/asset3' %>
+```
+
+而使用 VA 后，只需要在 /app/javascripts/foo/index/index.js 中如下声明：
+
+```js
+  //= 
+``` -->
+
+## CONVENTIONS/RULES
 
 使用 rake view_assets:init 任务，VA 会在 public 目录中添加下面的文件结构:
 
@@ -108,7 +211,7 @@ manifest file 指的是用于声明文件依赖的文件，**只有在这个文�
  */
 ```
 
-## Usage
+## USAGE
 
 在 Gemfile 中添加下面的代码：
 
@@ -129,97 +232,8 @@ end
 ```
 
 如果你的 controller 使用了自己的 layout 的话，则需要将在 `app/views/layouts/application.html.rb` 添加的代码也添加进去。
-
-## Example
-
-下面的目录是一个 rails 项目的 public 文件夹。
-
-    .
-    ├── 404.html
-    ├── 422.html
-    ├── 500.html
-    ├── app
-    │   ├── javascripts
-    │   │   ├── application.js
-    │   │   ├── bar
-    │   │   │   ├── index
-    │   │   │   │   ├── index.js
-    │   │   │   │   └── others.js
-    │   │   │   └── show.js
-    │   │   └── foo
-    │   │       ├── foo.js
-    │   │       ├── index
-    │   │       │   ├── index.js
-    │   │       │   └── others.js
-    │   │       └── show.js
-    │   └── stylesheets
-    │       ├── application.css
-    │       ├── bar
-    │       │   ├── index
-    │       │   │   ├── index.css
-    │       │   │   └── others.css
-    │       │   └── show.css
-    │       └── foo
-    │           ├── foo.css
-    │           ├── index
-    │           │   ├── index.css
-    │           │   └── others.css
-    │           └── show.css
-    ├── favicon.ico
-    ├── lib
-    │   ├── javascripts
-    │   │   ├── lib1.js
-    │   │   └── lib2.js
-    │   └── stylesheets
-    │       ├── lib1.css
-    │       └── lib2.css
-    └── vendor
-        ├── javascripts
-        │   ├── vendor1.js
-        │   └── vendor2.js
-        └── stylesheets
-            ├── vendor1.css
-            └── vendor2.css
-
-有如下的依赖声明：
-
-/vendor/javascripts/vendor1.js
-
-```js
-//= require_vendor vendor2
-```
-
-/lib/javascripts/lib1.js
-
-```js
-//= require_vendor lib2
-```
-
-/app/javascripts/application.js
-
-```js
-/**
- *= require_vendor vendor1
- *= require_lib lib1
- */
-```
-
-/app/javascripts/bar/show.js
-
-```js
-//= reuquire index/others.js
-```
-
-当访问 `bar/show`(比如：`localhost:3000/bar/show`) 时，可以看到在其 `html` 文件中的 `head` 有下面的几个 `script` 自动插入了：
-
-    <script src="vendor2.js" type="text/javascript"></script>
-    <script src="vendor1.js" type="text/javascript"></script>
-    <script src="lib2.js" type="text/javascript"></script>
-    <script src="lib1.js" type="text/javascript"></script>
-    <script src="application.js" type="text/javascript"></script>
-    <script src="index/others.js" type="text/javascript"></script>
     
-## others
+## OTHERS
 
 虽然这个 gem 有一定的方便性，但毕竟这是个简单的设计，目前支持简单的依赖管理，并不是个像 assets pipeline 一样十分成熟的程序。目前它还不支持许多 assets pipeline 实现的事情，比如在 production 模式下自动将所有 assets 压缩成一个文件等。
 
