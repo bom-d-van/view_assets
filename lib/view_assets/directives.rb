@@ -83,6 +83,8 @@ module ViewAssets
       # 
       # TODO refactor: use reasonable and effective regular expression
       # TODO use "require_app" as app asset directive and make "require" as a relative directive
+      # TODO BUG => rspec examples is unqualified on slash-asterisk syntax for css
+      #             can't detect mistakes like this: `^/\*=\s#{requiring_type}\s(?<path_params>.*)*\s\*/$`
       def generate_formula(requiring_type = 'require')
         if javascript? asset_type
           %r{
@@ -96,7 +98,7 @@ module ViewAssets
           %r{
               ^\s\*=\s#{requiring_type}\s(?<path_params>.*)$  # space-asterisk syntax
             |
-              ^/\*=\s#{requiring_type}\s(?<path_params>.*)*\s\*/$  # slash-asterisk syntax
+              ^/\*=\s#{requiring_type}\s(?<path_params>.*)\s\*/$  # slash-asterisk syntax
           }x
         end
       end
