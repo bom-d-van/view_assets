@@ -181,6 +181,7 @@ module ViewAssets
     # NOTE: All assets returned will be "unabsolutely_pathized" here. That
     #       means each string of file path does not contain any root path info.
     # todo BUG => can't retrieve assets with slash-asterisk(/*= xxx */) directive.
+    # todo add specs for testing required folders without index
     def meta_retrieve(manifest_path, manifest)
       single_file_lib = absolutely_pathize("#{ manifest_path }/#{ manifest }")
 
@@ -191,14 +192,19 @@ module ViewAssets
       real_manifest = nil
       if FileTest.exist?(single_file_lib)
         real_manifest = single_file_lib
+        # TODO refactor => quick fix loading required folders without idnex
+        all_assets_in_manifest_dir = [unabsolutely_pathize(real_manifest)]
       else FileTest.exist?(indexing_lib)
         real_manifest = indexing_lib
         all_assets_in_manifest_dir = retrieve_all_from(manifest_dir)
       end
 
+      # retrieve_assets_from(real_manifest).flatten
+      #                               .concat(all_assets_in_manifest_dir)
+      #                               .concat([unabsolutely_pathize(real_manifest)])
+      #                               .uniq
       retrieve_assets_from(real_manifest).flatten
                                     .concat(all_assets_in_manifest_dir)
-                                    .concat([unabsolutely_pathize(real_manifest)])
                                     .uniq
     end
 
