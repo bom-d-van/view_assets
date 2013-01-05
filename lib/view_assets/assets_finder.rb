@@ -130,6 +130,9 @@ module ViewAssets
 
     # start point of parsing dependent assets
     def retrieve_assets_from(manifest)
+      # TODO rspec examples for non-existed files
+      return [] unless FileTest.exist?(manifest)
+      
       assets = []
       directive = Directive.new(asset_type)
 
