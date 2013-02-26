@@ -8,9 +8,9 @@ describe AssetsFinder do
   let(:action_test_assets) { %w(vendor/javascripts/simple.js lib/javascripts/simple.js app/javascripts/another_controller/action1.js app/javascripts/main/action_test.js) }
   
   before(:each) do
-    AssetsFinder.any_instance.stub(:asset_extension).and_return(Javascript_Extension)
-    AssetsFinder.any_instance.stub(:asset_type).and_return(Javascript_Type)
-    AssetsFinder.any_instance.stub(:assets_path).and_return(Javascript_Path)
+    AssetsFinder.any_instance.stub(:asset_extension).and_return(Js_Extension)
+    AssetsFinder.any_instance.stub(:asset_type).and_return(Js_Type)
+    AssetsFinder.any_instance.stub(:assets_path).and_return(Js_Path)
   end
   
   describe 'path string manipulation' do

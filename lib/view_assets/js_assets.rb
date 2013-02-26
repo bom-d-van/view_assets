@@ -3,15 +3,15 @@ module ViewAssets
   class JavascriptAssets < AssetsFinder
     def assets_path
       # 'assets/javascripts'
-      Javascript_Path
+      Js_Path
     end
     
     def asset_extension
-      Javascript_Extension
+      Js_Extension
     end
     
     def asset_type
-      Javascript_Type
+      Js_Type
     end
     
     def tag(js_src)

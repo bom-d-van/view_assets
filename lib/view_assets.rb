@@ -19,8 +19,8 @@ module ViewAssets
   # TODO find out how to document constant.
   TO_VERIFY = false
   
-  Javascript_Type = 'javascript'
-  Javascript_Extension = 'js'
+  Js_Type = 'javascript'
+  Js_Extension = 'js'
   Javascript_Path = 'javascripts'
   
   Css_Type = 'css'
