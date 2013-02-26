@@ -1,8 +1,8 @@
 require File.expand_path File.dirname(__FILE__) + '/rspec_helper'
 
 describe Directive do
-  let(:js_directive) { Directive.new 'javascript' }
-  let(:css_directive) { Directive.new 'stylesheet' }
+  let(:js_directive) { Directive.new Javascript_Type }
+  let(:css_directive) { Directive.new Css_Type }
 
   describe '.new' do
     it { expect { Directive.new('unknown') }.to raise_error(ConfigurationError) }

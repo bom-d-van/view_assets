@@ -4,7 +4,7 @@ module ViewAssets
     def initialize(asset_type)
       # TODO find out asset_types that can run in both directive.rb and asset_finders
       # raise ConfigurationError.new('asset type should be "js" or "css"') unless %w(css js).include?(asset_type)
-      raise ConfigurationError.new('asset type should be "javascript" or "stylesheet"') unless %w(javascript stylesheet).include?(asset_type)
+      raise ConfigurationError.new("asset type should be '#{Javascript_Type}' or '#{Css_Type}'") unless [Javascript_Type, Css_Type].include?(asset_type)
       @asset_type = asset_type
     end
     

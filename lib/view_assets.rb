@@ -1,8 +1,8 @@
 ##
 # Introduction is in readme.md
 module ViewAssets
-  # TODO figure out why can't use require in this case
-  # TODO find another way to include rake tasks, this method seems weird.
+  # TODO: figure out why can't use require in this case
+  # TODO: find another way to include rake tasks, this method seems weird.
   load 'tasks/view_assets_tasks.rake' if defined?(Rake)
 
   require 'pathname'
@@ -18,6 +18,14 @@ module ViewAssets
   # Defaults to turn off. DO NOT use it in production.
   # TODO find out how to document constant.
   TO_VERIFY = false
+  
+  Javascript_Type = 'javascript'
+  Javascript_Extension = 'js'
+  Javascript_Path = 'javascripts'
+  
+  Css_Type = 'css'
+  Css_Extension = 'css'
+  Css_Path = 'stylesheets'
 
   attr_accessor :js_assets, :css_assets
 
