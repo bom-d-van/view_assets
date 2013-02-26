@@ -21,7 +21,7 @@ module ViewAssets
   
   Js_Type = 'javascript'
   Js_Extension = 'js'
-  Javascript_Path = 'javascripts'
+  Js_Path = 'javascripts'
   
   Css_Type = 'css'
   Css_Extension = 'css'
