@@ -1,6 +1,6 @@
 module ViewAssets
   # TODO add rspec examples
-  class JavascriptAssets < AssetsFinder
+  class JsAssets < AssetsFinder
     def assets_path
       # 'assets/javascripts'
       Js_Path

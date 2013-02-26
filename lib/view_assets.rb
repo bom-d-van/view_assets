@@ -38,7 +38,7 @@ module ViewAssets
   end
 
   def js_assets
-    @va_js_assets ||= JavascriptAssets.new(Rails.public_path, @va_controller, @va_action)
+    @va_js_assets ||= JsAssets.new(Rails.public_path, @va_controller, @va_action)
   end
 
   def css_assets
