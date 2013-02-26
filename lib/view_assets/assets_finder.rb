@@ -21,18 +21,12 @@ module ViewAssets
       super(*args)
     end
     
-    # todo try to figure out what really is DUCK TYPING
-    # tag method should be overrided by subclass
-    # def tag
-    #   raise UnimplementedError.new "tag method is unimplemented."
-    # end
-
     ##
     # This method is the ENTRY of assets finder after its initializtion.
     # It returns all asset paths wrapped inside a appropriated html
     # tag(`script` | `link`).
     def all
-      # todo remove this quick fix used for adding a leading slash to make 
+      # TODO: remove this quick fix used for adding a leading slash to make 
       all_assets.map { |asset| tag "/#{asset}" } # tag should be realized in a subclass
     end
 
@@ -76,7 +70,7 @@ module ViewAssets
     end
 
     ##
-    # The env assets are assets that will be required before action assets.
+    # The env assets will be required before action assets.
     # The function of env assets is to allow user to require some assets
     # that would be used throughout the whole application or controller.
     # Like views in rails, assets finder will use application.[js|css] existed
@@ -116,14 +110,19 @@ module ViewAssets
 
       # find files in the conventional directory
       manifest = nil
+      indexed_action = false
       manifest = single_action_path if FileTest.exist?(single_action_path)
-      manifest = indexed_action_path if FileTest.exist?(indexed_action_path)
+      manifest = indexed_action_path if (indexed_action = FileTest.exist?(indexed_action_path))
 
       # TODO add rspec example
       return @action_assets if manifest.nil?
 
       @action_assets = manifest.nil? ? [] : retrieve_assets_from(manifest)
-      @action_assets << unabsolutely_pathize(manifest)
+      if indexed_action # auto-require assets inside action directory
+        @action_assets.concat(Dir["#{action_path}/#{action_name}/**/*.#{asset_extension}"].map { |ass| unabsolutely_pathize(ass) })
+      else 
+        @action_assets << unabsolutely_pathize(manifest)
+      end
     end
 
     private
@@ -137,7 +136,7 @@ module ViewAssets
       directive = Directive.new(asset_type)
 
       Pathname.new(manifest).each_line do |line|
-        # break if directive.ending_directive?(l) # TODO add ending_directive support
+        # break if directive.ending_directive?(l) # TODO: add ending_directive support
         next unless directive.legal_directive?(line)
         
         assets.concat(analyze(*directive.parse(line)))
@@ -192,7 +191,7 @@ module ViewAssets
       real_manifest = nil
       if FileTest.exist?(single_file_lib)
         real_manifest = single_file_lib
-        # TODO refactor => quick fix loading required folders without idnex
+        # TODO refactor => add for a hotfix loading required folders without index
         all_assets_in_manifest_dir = [unabsolutely_pathize(real_manifest)]
       else FileTest.exist?(indexing_lib)
         real_manifest = indexing_lib
@@ -203,6 +202,7 @@ module ViewAssets
       #                               .concat(all_assets_in_manifest_dir)
       #                               .concat([unabsolutely_pathize(real_manifest)])
       #                               .uniq
+      # TODO add specs for dependent assets sequence
       retrieve_assets_from(real_manifest).flatten
                                     .concat(all_assets_in_manifest_dir)
                                     .uniq
