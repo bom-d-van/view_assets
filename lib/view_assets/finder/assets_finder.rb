@@ -227,30 +227,5 @@ module ViewAssets
     def relatively_pathize(asset_dir, asset)
       "#{ asset_dir }/#{ asset.match(/\.#{ asset_extension }$/) ? asset : "#{ asset }.#{ asset_extension }" }"
     end
-
-    # # TODO add tests
-    # def app_path
-    #   "app/#{ assets_path }"
-    # end
-    # 
-    # # TODO add tests
-    # def lib_path
-    #   "lib/#{ assets_path }"
-    # end
-    # 
-    # # TODO add tests
-    # def vendor_path
-    #   "vendor/#{ assets_path }"
-    # end
-    # 
-    # # todo document
-    # def absolutely_pathize(asset_path)
-    #   "#{ root.to_s }/#{ asset_path.match(/\.#{ asset_extension }$/) ? asset_path : "#{ asset_path }.#{ asset_extension }" }"
-    # end
-    # 
-    # # todo document
-    # def unabsolutely_pathize(asset_path)
-    #   asset_path.gsub(/^#{ root.to_s }\//, '')
-    # end
   end
 end
