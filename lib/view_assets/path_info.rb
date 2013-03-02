@@ -1,5 +1,5 @@
 module ViewAssets
-  class Path < String
+  class PathInfo < String
     attr_reader :dir
     
     def initialize(path, dir = 'app')

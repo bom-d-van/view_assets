@@ -6,12 +6,6 @@ module ViewAssets
   # TODO: figure out why can't use require in this case
   # TODO: find another way to include rake tasks, this method seems weird.
   load 'tasks/view_assets_tasks.rake' if defined?(Rake)
-
-  ##
-  # To verify all assets and throw exception when find out inexistent asset
-  # Defaults to turn off. DO NOT use it in production.
-  # TODO find out how to document constant.
-  TO_VERIFY = false
   
   APP_ROOT = Rails.root
   
@@ -19,32 +13,40 @@ module ViewAssets
   LIB_FOLDER = 'lib'
   VENDOR_FOLDER = 'vendor'
   
-  module AssetPathKnowable
-    def root
-      Pathname.new(APP_ROOT)
-    end
-    
-    def app_path
-      Pathname.new("#{APP_ROOT}/#{APP_FOLDER}/assets")
-    end
+  JS_TYPE = 'javascript'
+  JS_EXTENSION = 'js'
+  JS_PATH = 'javascripts'
+  
+  CSS_TYPE = 'css'
+  CSS_EXTENSION = 'css'
+  CSS_PATH = 'stylesheets'
+  
+  # module AssetPathKnowable
+  #   def root
+  #     Pathname.new(APP_ROOT)
+  #   end
+  #   
+  #   def app_path
+  #     Pathname.new("#{APP_ROOT}/#{APP_FOLDER}/assets")
+  #   end
+  # 
+  #   def lib_path
+  #     Pathname.new("#{APP_ROOT}/#{LIB_FOLDER}/assets")
+  #   end
+  # 
+  #   def vendor_path
+  #     Pathname.new("#{APP_ROOT}/#{VENDOR_FOLDER}/assets")
+  #   end
+  # end
 
-    def lib_path
-      Pathname.new("#{APP_ROOT}/#{LIB_FOLDER}/assets")
-    end
-
-    def vendor_path
-      Pathname.new("#{APP_ROOT}/#{VENDOR_FOLDER}/assets")
-    end
-  end
-
-  require 'view_assets/error'
-  require 'view_assets/info'
-  require 'view_assets/directives'
-  require 'view_assets/assets_finder'
-  require 'view_assets/js_assets'
-  require 'view_assets/css_assets'
-  require 'view_assets/path'
-  require 'view_assets/action_map'
+  # require 'view_assets/error'
+  # require 'view_assets/info'
+  # require 'view_assets/directives'
+  # require 'view_assets/assets_finder'
+  # require 'view_assets/js_assets'
+  # require 'view_assets/css_assets'
+  # require 'view_assets/path'
+  # require 'view_assets/action_map'
   
   # attr_accessor :js_assets, :css_assets
   # 
