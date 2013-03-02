@@ -1,5 +1,8 @@
 require File.expand_path File.dirname(__FILE__) + '/rspec_helper'
 
+include ViewAssets
+include ViewAssets::Finder
+
 describe Directive do
   let(:js_directive) { Directive.new JS_TYPE }
   let(:css_directive) { Directive.new CSS_TYPE }

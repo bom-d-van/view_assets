@@ -21,7 +21,9 @@ module ViewAssets
   CSS_EXT = 'css'
   CSS_PATH = 'stylesheets'
   
+  require 'view_assets/error'
   require 'view_assets/path_info'
+  require 'view_assets/finder/directive'
   
   # module AssetPathKnowable
   #   def root
