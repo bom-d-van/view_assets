@@ -1,8 +1,10 @@
 require File.expand_path File.dirname(__FILE__) + '/rspec_helper'
 
-describe AssetsFinder do
+include ViewAssets::Finder
+
+describe Finder do
   # let(:empty_af) { AssetsFinder.new('', '', '') }
-  let(:af) { AssetsFinder.new }
+  let(:af) { Finder.new }
   # let(:simple_af) { AssetsFinder.new(FIXTURE_ROOT, '', '') }
   # let(:main_af) { AssetsFinder.new(FIXTURE_ROOT, 'main', '') }
   # let(:action_test_af) { AssetsFinder.new(FIXTURE_ROOT, 'main', 'action_test') }

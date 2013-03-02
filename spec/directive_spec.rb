@@ -1,6 +1,6 @@
 require File.expand_path File.dirname(__FILE__) + '/rspec_helper'
+require 'view_assets/finder/directive'
 
-include ViewAssets
 include ViewAssets::Finder
 
 describe Directive do

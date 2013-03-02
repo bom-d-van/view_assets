@@ -1,5 +1,4 @@
 require File.expand_path('./rspec_helper', File.dirname(__FILE__))
-include ViewAssets
 
 # shared_examples 'path' do |dir, extension|
 describe PathInfo do

@@ -23,7 +23,6 @@ module ViewAssets
   
   require 'view_assets/error'
   require 'view_assets/path_info'
-  require 'view_assets/finder/directive'
   
   # module AssetPathKnowable
   #   def root
