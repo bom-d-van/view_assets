@@ -14,12 +14,14 @@ module ViewAssets
   VENDOR_FOLDER = 'vendor'
   
   JS_TYPE = 'javascript'
-  JS_EXTENSION = 'js'
+  JS_EXT = 'js'
   JS_PATH = 'javascripts'
   
   CSS_TYPE = 'css'
-  CSS_EXTENSION = 'css'
+  CSS_EXT = 'css'
   CSS_PATH = 'stylesheets'
+  
+  require 'view_assets/path_info'
   
   # module AssetPathKnowable
   #   def root

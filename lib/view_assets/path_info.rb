@@ -1,69 +1,49 @@
 module ViewAssets
   class PathInfo < String
-    attr_reader :dir
-    
-    def initialize(path, dir = 'app')
+    def initialize(path)
       replace path
-      
-      @dir = dir
-      
-      @absolutized = absolutize?
     end
     
-    def absolutize?
-      !!match(/^#{APP_ROOT}/)
+    def abs?
+      !!match(/^#{root}/)
     end
     
     # alter path string
     #   'lib.js'
-    # to
-    #   '/path/to/app/:dir/assets/:asset_type/file.js'
-    def absolutize
-      return self if @absolutized
+    # => 
+    #   '/path/to/app/public/:type/file.js'
+    def abs
+      return self if abs?
       @absolutized = true
     
-      "#{root}/#{contain_extension? ? self : "#{self}.#{extension}" }"
+      "#{root}/#{with_ext? ? self : "#{self}.#{ext}" }"
     end
     
-    def absolutize!
-      replace absolutize
+    def abs!
+      replace abs
     end
     
-    def contain_extension?
-      !!match(/\.#{ extension }$/)
+    def with_ext?
+      !!match(/\.(#{JS_EXT}|#{CSS_EXT})$/)
     end
 
-    # alter path string from
+    # alter path string
     #   '/path/to/app/:dir/assets/:asset_type/file.js'
-    # to
+    #  => 
     #   'file.js'
-    def unabsolutize
-      return self unless @absolutized
+    def rel
+      return self unless abs?
       @absolutized = false
       
-      gsub(/^#{ root }\//, '')
+      gsub(/^#{root}\//, '')
     end
     
-    def unabsolutize!
-      replace unabsolutize
+    def rel!
+      replace rel
     end
-    
-    private
     
     def root
-      "#{APP_ROOT}/#{asset_root}"
+      "#{APP_ROOT}"
     end
-    
-    def asset_root
-      "#{dir}/assets/#{path}"
-    end
-  end
-  
-  class JsPath < Path
-    include JsAssetInfo
-  end
-  
-  class CssPath < Path
-    include CssAssetInfo
   end
 end

@@ -10,6 +10,6 @@ class Rails
 end
 
 require 'view_assets'
-include ViewAssets
-include ViewAssets::JsAssetInfo
-include ViewAssets::CssAssetInfo
+# include ViewAssets
+# include ViewAssets::JsAssetInfo
+# include ViewAssets::CssAssetInfo
