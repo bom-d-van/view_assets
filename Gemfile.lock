@@ -11,6 +11,7 @@ GEM
       Platform (>= 0.4.0)
       open4
     Platform (0.4.0)
+    ZenTest (4.8.3)
     actionmailer (3.2.8)
       actionpack (= 3.2.8)
       mail (~> 2.4.4)
@@ -39,6 +40,7 @@ GEM
       i18n (~> 0.6)
       multi_json (~> 1.0)
     arel (3.0.2)
+    autotest-growl (0.2.16)
     builder (3.0.4)
     columnize (0.3.2)
     debugger (1.2.1)
@@ -116,6 +118,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  ZenTest (= 4.8.3)
+  autotest-growl
   debugger
   jquery-rails
   rspec

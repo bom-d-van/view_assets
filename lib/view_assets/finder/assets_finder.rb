@@ -12,13 +12,18 @@
 module ViewAssets
   ##
   # It's an abstract class.
-  class AssetsFinder < Struct.new(:root, :controller_name, :action_name)
+  class AssetsFinder # < Struct.new(:root, :controller_name, :action_name)
+    include AssetPathKnowable
     
-    def initialize(*args)
+    def initialize
       @all_assets = []
+      @controller_assets = []
+      @action_assets = []
+      
       @retrieved = false
       
-      super(*args)
+      @controller_name = ''
+      @action_name = ''
     end
     
     ##
@@ -49,7 +54,13 @@ module ViewAssets
     end
     
     # TODO document
-    def retrieve
+    def retrieve(controller = '', action = '')
+      @controller_assets = []
+      @action_assets = []
+      
+      @controller_name = controller unless controller.nil?
+      @action_name = action unless action.nil?
+      
       @all_assets = controller_assets.concat(action_assets).uniq if @all_assets.empty?
       @retrieved = true
     end
@@ -80,8 +91,8 @@ module ViewAssets
       return @controller_assets unless @controller_assets.nil?
       
       @controller_assets = []
-      application_manifest = "#{ root }/#{ app_path }/application.#{ asset_extension }"
-      controller_manifest = "#{ root }/#{ app_path }/#{ controller_name }/#{ controller_name }.#{ asset_extension }"
+      application_manifest = "#{app_path.to_s}/application.#{asset_extension}"
+      controller_manifest = "#{app_path.to_s}/#{controller_name}/#{controller_name}.#{asset_extension}"
 
       manifest = nil
       manifest = application_manifest if FileTest.exist?(application_manifest)
@@ -104,9 +115,9 @@ module ViewAssets
       return @action_assets unless @action_assets.nil?
       
       @action_assets = []
-      action_path = "#{ root }/#{ app_path }/#{ controller_name }"
-      single_action_path = "#{ action_path }/#{ action_name }.#{ asset_extension }"
-      indexed_action_path = "#{ action_path }/#{ action_name }/index.#{ asset_extension }"
+      action_path = "#{app_path.to_s}/#{controller_name}"
+      single_action_path = "#{action_path}/#{action_name}.#{asset_extension}"
+      indexed_action_path = "#{action_path}/#{action_name}/index.#{asset_extension}"
 
       # find files in the conventional directory
       manifest = nil
@@ -210,36 +221,36 @@ module ViewAssets
 
     # TODO add test for dir should be a relative path
     def retrieve_all_from(dir)
-      Dir["#{ root }/#{ dir }/**/*.#{ asset_extension }"].map { |file| unabsolutely_pathize(file) }
+      Dir["#{ root.to_s }/#{ dir }/**/*.#{ asset_extension }"].map { |file| unabsolutely_pathize(file) }
     end
 
     def relatively_pathize(asset_dir, asset)
       "#{ asset_dir }/#{ asset.match(/\.#{ asset_extension }$/) ? asset : "#{ asset }.#{ asset_extension }" }"
     end
 
-    # TODO add tests
-    def app_path
-      "app/#{ assets_path }"
-    end
-
-    # TODO add tests
-    def lib_path
-      "lib/#{ assets_path }"
-    end
-
-    # TODO add tests
-    def vendor_path
-      "vendor/#{ assets_path }"
-    end
-
-    # todo document
-    def absolutely_pathize(asset_path)
-      "#{ root }/#{ asset_path.match(/\.#{ asset_extension }$/) ? asset_path : "#{ asset_path }.#{ asset_extension }" }"
-    end
-
-    # todo document
-    def unabsolutely_pathize(asset_path)
-      asset_path.gsub(/^#{ root }\//, '')
-    end
+    # # TODO add tests
+    # def app_path
+    #   "app/#{ assets_path }"
+    # end
+    # 
+    # # TODO add tests
+    # def lib_path
+    #   "lib/#{ assets_path }"
+    # end
+    # 
+    # # TODO add tests
+    # def vendor_path
+    #   "vendor/#{ assets_path }"
+    # end
+    # 
+    # # todo document
+    # def absolutely_pathize(asset_path)
+    #   "#{ root.to_s }/#{ asset_path.match(/\.#{ asset_extension }$/) ? asset_path : "#{ asset_path }.#{ asset_extension }" }"
+    # end
+    # 
+    # # todo document
+    # def unabsolutely_pathize(asset_path)
+    #   asset_path.gsub(/^#{ root.to_s }\//, '')
+    # end
   end
 end

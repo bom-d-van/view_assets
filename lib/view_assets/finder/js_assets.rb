@@ -1,17 +1,18 @@
 module ViewAssets
-  # TODO add rspec examples
+  # TODO: add rspec examples
+  # TODO: use JsAssetInfo module
   class JsAssets < AssetsFinder
     def assets_path
       # 'assets/javascripts'
-      Js_Path
+      JS_PATH
     end
     
     def asset_extension
-      Js_Extension
+      JS_EXTENSION
     end
     
     def asset_type
-      Js_Type
+      JS_TYPE
     end
     
     def tag(js_src)

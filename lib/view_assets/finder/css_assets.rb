@@ -3,15 +3,15 @@ module ViewAssets
   class StyleSheetAssets < AssetsFinder
     def assets_path
       # 'assets/javascripts'
-      Css_Path
+      CSS_PATH
     end
     
     def asset_extension
-      Css_Type
+      CSS_TYPE
     end
     
     def asset_type
-      Css_Type
+      CSS_TYPE
     end
     
     def tag(css_href)
