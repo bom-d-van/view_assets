@@ -1,7 +1,7 @@
 module ViewAssets
   module Finder
     # TODO add rspec examples
-    class StyleSheetAssets < Finder
+    class CssFinder < Finder
       def assets_path
         # 'assets/javascripts'
         CSS_PATH

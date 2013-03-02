@@ -1,5 +1,11 @@
 module ViewAssets
   class PathInfo < String
+    def ==(pi)
+      pi = PathInfo.new(pi) unless pi.kind_of?(PathInfo)
+      
+      self.rel == pi.rel
+    end
+    
     def initialize(path)
       replace path
     end
@@ -16,7 +22,7 @@ module ViewAssets
       return self if abs?
       @absolutized = true
     
-      "#{root}/#{with_ext? ? self : "#{self}.#{ext}" }"
+      PathInfo.new("#{root}/#{with_ext? ? self : "#{self}.#{ext}" }")
     end
     
     def abs!
@@ -35,11 +41,12 @@ module ViewAssets
       return self unless abs?
       @absolutized = false
       
-      gsub(/^#{root}\//, '')
+      PathInfo.new(gsub(/^#{root}\//, ''))
     end
     
     def rel!
       replace rel
+      self
     end
     
     def root

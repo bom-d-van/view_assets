@@ -12,70 +12,52 @@
 module ViewAssets
   module Finder
     ##
-    # It's an abstract class.
-    class Finder # < Struct.new(:root, :controller, :action)
+    # This is an abstract class.
+    class Finder
+      attr_accessor :controller, :action, :assets
       def initialize
-        @all_assets = []
-        @controller_assets = []
-        @action_assets = []
-      
-        @retrieved = false
-      
         @controller = ''
         @action = ''
+        @assets = []
       end
-    
+      
       ##
       # This method is the ENTRY of assets finder after its initializtion.
       # It returns all asset paths wrapped inside a appropriated html
       # tag(`script` | `link`).
-      def all
-        # TODO: remove this quick fix used for adding a leading slash to make 
-        all_assets.map { |asset| tag "/#{asset}" } # tag should be realized in a subclass
+      # options
+      # :controller => nil
+      # :action => nil
+      # :full => false
+      # :tagged => false
+      # TODO: remove this quick fix used for adding a leading slash to make 
+      def retrieve(options = {})
+        options[:full] ||= false
+        options[:tagged] ||= false
+        
+        assets = []
+        controller = options[:controller] unless options[:controller].nil?
+        action = options[:action] unless options[:action]
+        
+        retrieve_controller_assets
+        retrieve_action_assets
+        assets.uniq!
+        
+        assets.map! { |(assPathInfo.newetize).relasset) } if options[:full]
+        
+        all_assets.map { |asset| tag "/#{asset}" } if options[:tagged]
+        
+        assets
       end
 
-      ##
-      # get all the asset paths in full path
-      # TODO realize this method
-      def full
-        all_assets.map { |asset| absolutely_pathize(asset) }
-      end
-
-      ##
-      # "untagged" means hasn't been wrapped inside a appropriated html tag like
-      # `script` or `link`
-      def all_assets
-        retrieve unless retrieved?
-
-        verify if TO_VERIFY
-      
-        @all_assets
-      end
-    
-      # TODO document
-      def retrieve(controller = '', action = '')
-        @controller_assets = []
-        @action_assets = []
-      
-        @controller = controller unless controller.nil?
-        @action = action unless action.nil?
-      
-        @all_assets = controller_assets.concat(action_assets).uniq if @all_assets.empty?
-        @retrieved = true
-      end
-    
-      # TODO document
-      def retrieved?
-        @retrieved
-      end
+      private
     
       ##
       # Check out whether all assets is existed or not
       # It is better to be turned off in production
       def verify
         all_assets.each do |asset| 
-          asset_file = absolutely_pathize(asset)
-          raise AssetNotFound.new("File #{asset} DOEST EXIST") if FileTest.exist?(asset_file)
+          raise AssetNotFound.new("File #{asset} DOEST EXIST") unless FileTest.exist?(asset.abs)
         end
       end
 
@@ -86,22 +68,19 @@ module ViewAssets
       # Like views in rails, assets finder will use application.[js|css] existed
       # in /app/assets/[javascripts|stylesheets] folder if:controller.[js|css]
       # in /app/assets/[javascripts|stylesheets]/:controller is not existed.
-      def controller_assets
-        return @controller_assets unless @controller_assets.nil?
-      
-        @controller_assets = []
-        application_manifest = "#{app_path.to_s}/application.#{asset_extension}"
-        controller_manifest = "#{app_path.to_s}/#{controller}/#{controller}.#{asset_extension}"
+      def retrieve_controller_assets
+        application_manifest = PathInfo.new("#{app_path.to_s}/application.#{asset_extension}")
+        controller_manifest = PathInfo.new("#{app_path.to_s}/#{controller}/#{controller}.#{asset_extension}")
 
         manifest = nil
         manifest = application_manifest if FileTest.exist?(application_manifest)
         manifest = controller_manifest if FileTest.exist?(controller_manifest)
       
         # TODO add rspec example
-        return @controller_assets if manifest.nil?
+        return assets if manifest.nil?
 
-        @controller_assets = manifest.nil? ? [] : retrieve_assets_from(manifest)
-        @controller_assets << unabsolutely_pathize(manifest)
+        assets = manifest.nil? ? [] : retrieve_assets_from(manifest)
+        assets << manifest.rel
       end
 
       ##
@@ -110,13 +89,10 @@ module ViewAssets
       # If the action assets is a foler consisting several asset files, finder will
       # includes all the assets inside this folder. Among these files, a file named
       # index.[js|css] will be taken as manifest file.
-      def action_assets
-        return @action_assets unless @action_assets.nil?
-      
-        @action_assets = []
-        action_path = "#{app_path.to_s}/#{controller}"
-        single_action_path = "#{action_path}/#{action}.#{asset_extension}"
-        indexed_action_path = "#{action_path}/#{action}/index.#{asset_extension}"
+      def retrieve_action_assets
+        action_path = PathInfo.new("#{app_path.to_s}/#{controller}")
+        single_action_path = PathInfo.new("#{action_path}/#{action}.#{asset_extension}")
+        indexed_action_path = PathInfo.new("#{action_path}/#{action}/index.#{asset_extension}")
 
         # find files in the conventional directory
         manifest = nil
@@ -125,17 +101,15 @@ module ViewAssets
         manifest = indexed_action_path if (indexed_action = FileTest.exist?(indexed_action_path))
 
         # TODO add rspec example
-        return @action_assets if manifest.nil?
+        return assets if manifest.nil?
 
-        @action_assets = manifest.nil? ? [] : retrieve_assets_from(manifest)
-        if indexed_action # auto-require assets inside action directory
-          @action_assets.concat(Dir["#{action_path}/#{action}/**/*.#{asset_extension}"].map { |ass| unabsolutely_pathize(ass) })
+        assets = manifest.nil? ? [] : retrieve_assets_from(manifest)
+        if indexed_action
+          assets.concat(Dir["#{action_path}/#{action}/**/*.#{asset_extension}"].map { |ass| PathInfo.new(ass).rel })
         else 
-          @action_assets << unabsolutely_pathize(manifest)
+          assets << manifest.rel
         end
       end
-
-      private
 
       # start point of parsing dependent assets
       def retrieve_assets_from(manifest)
@@ -167,10 +141,17 @@ module ViewAssets
         end
       end
 
+      # asset.js
+      # /:another_controller/asset.js
+      # => 
+      # /path/to/app/public/app/javascript/:controller/asset.js
+      # /path/to/app/public/app/javascript/:another_controller/asset.js
       def retrieve_app_asset(required_asset)
-        asset_path = "#{app_path}#{required_asset.match(/^\//) ? '' : "/#{controller}"}"
-      
-        relatively_pathize(asset_path, required_asset.gsub(/^\//, ''))
+        required_asset = PathInfo.new(required_asset)
+
+        dir = "#{app_path}/#{required_asset.match(/^\//) ? '' : "#{controller}/"}"
+        asset = "#{required_asset}#{required_asset.with_ext? ? '' : ".#{asset_extension}"}"
+        PathInfo.new(dir + asset)
       end
 
       def retrieve_vendor_assets(manifest)
@@ -192,58 +173,47 @@ module ViewAssets
       # todo BUG => can't retrieve assets with slash-asterisk(/*= xxx */) directive.
       # todo add specs for testing required folders without index
       def meta_retrieve(manifest_path, manifest)
-        single_file_lib = absolutely_pathize("#{manifest_path}/#{manifest}")
+        single_file_lib = PathInfo.new("#{manifest_path}/#{manifest}")
 
         manifest_dir = "#{manifest_path}/#{manifest}"
-        indexing_lib = absolutely_pathize("#{manifest_dir}/index")
+        indexing_lib = PathInfo.new("#{manifest_dir}/index")
         all_assets_in_manifest_dir = []
 
         real_manifest = nil
         if FileTest.exist?(single_file_lib)
           real_manifest = single_file_lib
           # TODO refactor => add for a hotfix loading required folders without index
-          all_assets_in_manifest_dir = [unabsolutely_pathize(real_manifest)]
+          
+          all_assets_in_manifest_dir = [real_manifest.rel]
         else FileTest.exist?(indexing_lib)
           real_manifest = indexing_lib
-          all_assets_in_manifest_dir = retrieve_all_from(manifest_dir)
+          
+          all_assets_in_manifest_dir = Dir["#{manifest_dir}/**/*.#{asset_extension}"].map { |file| PathInfo.new(file).rel }
         end
 
-        # retrieve_assets_from(real_manifest).flatten
-        #                               .concat(all_assets_in_manifest_dir)
-        #                               .concat([unabsolutely_pathize(real_manifest)])
-        #                               .uniq
         # TODO add specs for dependent assets sequence
         retrieve_assets_from(real_manifest).flatten
                                       .concat(all_assets_in_manifest_dir)
                                       .uniq
       end
 
-      # TODO add test for dir should be a relative path
-      def retrieve_all_from(dir)
-        Dir["#{root.to_s}/#{dir}/**/*.#{asset_extension}"].map { |file| unabsolutely_pathize(file) }
-      end
-
-      def relatively_pathize(asset_dir, asset)
-        "#{asset_dir}/#{asset.match(/\.#{asset_extension}$/) ? asset : "#{asset}.#{asset_extension}"}"
-      end
-    
       def root
         APP_ROOT
       end
 
       # TODO add tests
       def app_path
-        "app/#{assets_path}"
+        "#{root}app/#{assets_path}"
       end
     
       # TODO add tests
       def lib_path
-        "lib/#{assets_path}"
+        "#{root}lib/#{assets_path}"
       end
     
       # TODO add tests
       def vendor_path
-        "vendor/#{assets_path}"
+        "#{root}vendor/#{assets_path}"
       end
     end
   end
