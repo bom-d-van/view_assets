@@ -1,6 +1,6 @@
-require File.expand_path File.dirname(__FILE__) + '/rspec_helper'
+require File.expand_path('./finder_spec_helper', File.dirname(__FILE__))
 
-describe JsAssets do
+describe JsFinder do
   # TODO how to write reasonable examples
   # it 'has legal script tag encapsulation' do
   #   

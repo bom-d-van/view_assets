@@ -12,28 +12,29 @@
 module ViewAssets
   module Finder
     class Finder
-      attr_accessor :controller, :action, :assets
+      attr_accessor :controller, :action, :assets, :parsed_manifests
       def initialize
         @controller = ''
         @action = ''
         @assets = []
+        @parsed_manifests = []
       end
       
       ##
       # This method is the ENTRY of assets finder after its initializtion.
       # It returns all asset paths wrapped inside a appropriated html
-      # tag(`script` | `link`).
       # options
-      # :controller => nil
-      # :action => nil
-      # :full => false
-      # :tagged => false
+      #     :controller => nil
+      #     :action => nil
+      #     :full => false
+      #     :tagged => false
       # TODO: remove this quick fix used for adding a leading slash to make 
       def retrieve(options = {})
         options[:full] ||= false
         options[:tagged] ||= false
         
         assets = []
+        parsed_manifest = []
         controller = options[:controller] unless options[:controller].nil?
         action = options[:action] unless options[:action]
         
@@ -41,9 +42,9 @@ module ViewAssets
         retrieve_action_assets
         assets.uniq!
         
-        assets.map! { |(assPathInfo.newetize).relasset) } if options[:full]
+        assets.map! { |asset| PathInfo.new(asset).rel } if options[:full]
         
-        all_assets.map { |asset| tag "/#{asset}" } if options[:tagged]
+        all_assets.map! { |asset| tag "/#{asset}" } if options[:tagged]
         
         assets
       end
@@ -111,6 +112,8 @@ module ViewAssets
 
       # start point of parsing dependent assets
       def retrieve_assets_from(manifest)
+        return [] if parsed_manifest.include?(manifest)
+        
         # TODO rspec examples for non-existed files
         return [] unless FileTest.exist?(manifest)
       
@@ -123,6 +126,8 @@ module ViewAssets
         
           assets.concat(analyze(*directive.parse(line)))
         end
+        
+        parsed_manifest.push(manifest)
 
         # TODO find another way to realize this instead of using "flatten" method
         assets.flatten
