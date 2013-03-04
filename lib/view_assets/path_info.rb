@@ -3,7 +3,7 @@ module ViewAssets
     def ==(pi)
       pi = PathInfo.new(pi) unless pi.kind_of?(PathInfo)
       
-      self.rel == pi.rel
+      self.rel == pi
     end
     
     def initialize(path)
@@ -20,7 +20,6 @@ module ViewAssets
     #   '/path/to/app/public/:type/file.js'
     def abs
       return self if abs?
-      @absolutized = true
     
       PathInfo.new("#{root}/#{with_ext? ? self : "#{self}.#{ext}" }")
     end
@@ -39,7 +38,6 @@ module ViewAssets
     #   'file.js'
     def rel
       return self unless abs?
-      @absolutized = false
       
       PathInfo.new(gsub(/^#{root}\//, ''))
     end
@@ -50,7 +48,7 @@ module ViewAssets
     end
     
     def root
-      "#{APP_ROOT}"
+      "#{ViewAssets::APP_ROOT}"
     end
   end
 end
