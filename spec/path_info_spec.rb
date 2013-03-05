@@ -8,6 +8,11 @@ describe PathInfo do
   let(:abs_path) { PathInfo.new("#{TEST_ROOT}/app/javascripts/file.js") }
   let(:rel_path) { PathInfo.new("app/javascripts/file.js") }
   
+  describe "#abs?" do
+    it { abs_path.abs?.should == true }
+    it { rel_path.abs?.should == false }
+  end
+  
   describe "#abs" do
       it { abs_path.abs.to_s.should == "#{TEST_ROOT}/app/javascripts/file.js" }
       it { rel_path.abs.to_s.should == "#{TEST_ROOT}/app/javascripts/file.js" }

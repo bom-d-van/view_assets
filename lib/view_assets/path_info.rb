@@ -11,7 +11,7 @@ module ViewAssets
     end
     
     def abs?
-      !!match(/^#{root}/)
+      !match(/^#{root}/).nil?
     end
     
     # alter path string
@@ -21,7 +21,8 @@ module ViewAssets
     def abs
       return self if abs?
     
-      PathInfo.new("#{root}/#{with_ext? ? self : "#{self}.#{ext}" }")
+      # PathInfo.new("#{root}/#{with_ext? ? self : "#{self}.#{ext}" }")
+      PathInfo.new("#{root}/#{self}")
     end
     
     def abs!
