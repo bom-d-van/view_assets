@@ -1,0 +1,1 @@
+//= require action10/file1, action10/file2

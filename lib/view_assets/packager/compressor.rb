@@ -1,12 +1,7 @@
 module ViewAssets
-  module Compressor
-    # include Dirable
-    
+  module Packager
     def compile
       require 'yui-compressor'
-      
-      
-     
     end
   
     # class Compressor
