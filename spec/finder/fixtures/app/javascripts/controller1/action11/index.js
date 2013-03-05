@@ -1,0 +1,1 @@
+//= require /controller2/action2/file1, /controller2/action2/file2

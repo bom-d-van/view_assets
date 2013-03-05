@@ -86,7 +86,7 @@ describe JsFinder do
   end
   
   context "when requirements are complicating" do
-    it "retrieve nested dependences" do
+    it "retrieves nested dependences" do
       result = finder.retrieve({ :controller => 'controller1', :action => 'action5' })
       expected = %w(
         vendor/javascripts/vendor1.js
@@ -102,7 +102,7 @@ describe JsFinder do
       result.should == expected
     end
     
-    it "retrieve multiple-files libs and vendors" do
+    it "retrieves multiple-files libs and vendors" do
       result = finder.retrieve({ :controller => 'controller1', :action => 'action6' })
       expected = %w(
         vendor/javascripts/vendor1.js
@@ -120,7 +120,7 @@ describe JsFinder do
       result.should == expected
     end
     
-    it "retrieve indexed libs and vendors" do
+    it "retrieves indexed libs and vendors" do
       result = finder.retrieve({ :controller => 'controller1', :action => 'action7' })
       expected = %w(
         vendor/javascripts/vendor1.js
@@ -142,12 +142,63 @@ describe JsFinder do
       result.should == expected
     end
     
-    it "avoid end-less retrieving for closed-loop requirements" do
+    it "avoids end-less retrieving for closed-loop requirements" do
+      result = finder.retrieve({ :controller => 'controller1', :action => 'action8' })
+      expected = %w(
+        vendor/javascripts/vendor1.js
+        lib/javascripts/lib1.js
+        app/javascripts/application.js
+        lib/javascripts/lib8.js
+        lib/javascripts/lib7.js
+        app/javascripts/controller1/action8.js
+      )
       
+      result.should == expected
     end
     
-    it "support multiple requiring directives" do
-      pending
+    it "supports multiple requiring directives" do
+      result = finder.retrieve({ :controller => 'controller3', :action => 'action1' })
+      expected = %w(
+        vendor/javascripts/vendor7.js
+        vendor/javascripts/vendor8.js
+        lib/javascripts/lib10.js
+        vendor/javascripts/vendor10.js
+        app/javascripts/controller3/controller3.js
+        vendor/javascripts/vendor9.js
+        lib/javascripts/lib9.js
+        lib/javascripts/lib11.js
+        app/javascripts/controller3/action1.js
+      )
+      
+      result.should == expected
+    end
+    
+    it "retrieves assets from another action" do
+      result = finder.retrieve({ :controller => 'controller1', :action => 'action9' })
+      expected = %w(
+        vendor/javascripts/vendor1.js
+        lib/javascripts/lib1.js
+        app/javascripts/application.js
+        app/javascripts/controller1/action10/file1.js
+        app/javascripts/controller1/action10/file2.js
+        app/javascripts/controller1/action9.js
+      )
+      
+      result.should == expected
+    end
+    
+    it "retrieves assets fron another controller" do
+      result = finder.retrieve({ :controller => 'controller1', :action => 'action11' })
+      expected = %w(
+        vendor/javascripts/vendor1.js
+        lib/javascripts/lib1.js
+        app/javascripts/application.js
+        app/javascripts//controller2/action2/file1.js
+        app/javascripts//controller2/action2/file2.js
+        app/javascripts/controller1/action11/index.js
+      )
+            
+      result.should == expected
     end
   end
 end

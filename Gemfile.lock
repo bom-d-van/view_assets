@@ -40,7 +40,6 @@ GEM
       i18n (~> 0.6)
       multi_json (~> 1.0)
     arel (3.0.2)
-    autotest-growl (0.2.16)
     builder (3.0.4)
     columnize (0.3.2)
     debugger (1.2.1)
@@ -100,11 +99,15 @@ GEM
     rspec-expectations (2.10.0)
       diff-lcs (~> 1.1.3)
     rspec-mocks (2.10.1)
+    rspec-nc (0.0.5)
+      rspec (~> 2.9)
+      terminal-notifier (~> 1.4.2)
     sprockets (2.1.3)
       hike (~> 1.2)
       rack (~> 1.0)
       tilt (~> 1.1, != 1.3.0)
     sqlite3 (1.3.6)
+    terminal-notifier (1.4.2)
     thor (0.16.0)
     tilt (1.3.3)
     treetop (1.4.12)
@@ -119,10 +122,10 @@ PLATFORMS
 
 DEPENDENCIES
   ZenTest (= 4.8.3)
-  autotest-growl
   debugger
   jquery-rails
   rspec
+  rspec-nc
   sqlite3
   view_assets!
   yui-compressor

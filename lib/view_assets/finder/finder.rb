@@ -74,7 +74,7 @@ module ViewAssets
       # in /app/assets/[javascripts|stylesheets]/:controller is not existed.
       def retrieve_controller_assets
         application_manifest = PathInfo.new("#{app_path.to_s}/application.#{asset_extension}")
-        controller_manifest = PathInfo.new("#{app_path.to_s}/#{controller}/#{controller}.#{asset_extension}")
+        controller_manifest = PathInfo.new("#{app_path.to_s}/#{@controller}/#{@controller}.#{asset_extension}")
 
         manifest = nil
         manifest = application_manifest if FileTest.exist?(application_manifest)
@@ -93,9 +93,9 @@ module ViewAssets
       # includes all the assets inside this folder. Among these files, a file named
       # index.[js|css] will be taken as manifest file.
       def retrieve_action_assets
-        action_path = PathInfo.new("#{app_path.to_s}/#{controller}")
-        single_action_path = PathInfo.new("#{action_path}/#{action}.#{asset_extension}")
-        indexed_action_path = PathInfo.new("#{action_path}/#{action}")
+        action_path = PathInfo.new("#{app_path.to_s}/#{@controller}")
+        single_action_path = PathInfo.new("#{action_path}/#{@action}.#{asset_extension}")
+        indexed_action_path = PathInfo.new("#{action_path}/#{@action}")
         manifest = nil
         
         manifest = single_action_path if FileTest.exist?(single_action_path)
@@ -103,12 +103,11 @@ module ViewAssets
         action_index = "#{indexed_action_path}/index.#{asset_extension}"
         manifest = PathInfo.new(action_index) if FileTest.exist?(action_index)
 
-        # TODO add rspec example
         @assets.concat(retrieve_assets_from(manifest)) unless manifest.nil?
         
         if FileTest.exist?(indexed_action_path)
-          auto_required_assets = Dir["#{action_path}/#{action}/**/*.#{asset_extension}"]
-          puts "#{action_path}/#{action}/**/*.#{asset_extension}"
+          auto_required_assets = Dir["#{action_path}/#{@action}/**/*.#{asset_extension}"]
+          puts "#{action_path}/#{@action}/**/*.#{asset_extension}"
           
           @assets.concat(auto_required_assets.map{ |ass| PathInfo.new(ass).rel })
         else 
@@ -120,6 +119,7 @@ module ViewAssets
       def retrieve_assets_from(manifest)
         # TODO rspec examples for non-existed files
         return [] if @parsed_manifests.include?(manifest) || !FileTest.exist?(manifest)
+        @parsed_manifests.push(manifest)
         
         required_assets = []
         directive = Directive.new(asset_type)
@@ -127,7 +127,6 @@ module ViewAssets
         Pathname.new(manifest).each_line do |line|
           required_assets.concat(analyze(*directive.parse(line))) if directive.legal_directive?(line)
         end
-        @parsed_manifests.push(manifest)
         
         required_assets.flatten
       end
@@ -151,9 +150,9 @@ module ViewAssets
       def retrieve_app_asset(required_asset)
         required_asset = PathInfo.new(required_asset)
 
-        dir = "#{app_path}/#{required_asset.match(/^\//) ? '' : "#{controller}/"}"
+        dir = "#{app_path}/#{required_asset.match(/^\//) ? '' : "#{@controller}/"}"
         asset = "#{required_asset}#{required_asset.with_ext? ? '' : ".#{asset_extension}"}"
-        PathInfo.new(dir + asset)
+        PathInfo.new(dir + asset).rel
       end
 
       def retrieve_vendor_assets(manifest)
