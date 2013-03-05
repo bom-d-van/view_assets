@@ -74,11 +74,11 @@ module ViewAssets
       # in /app/assets/[javascripts|stylesheets]/:controller is not existed.
       def retrieve_controller_assets
         application_manifest = PathInfo.new("#{app_path.to_s}/application.#{asset_extension}")
-        controller_manifest = PathInfo.new("#{app_path.to_s}/#{@controller}/#{@controller}.#{asset_extension}")
+        controller_manifest  = PathInfo.new("#{app_path.to_s}/#{@controller}/#{@controller}.#{asset_extension}")
 
         manifest = nil
         manifest = application_manifest if FileTest.exist?(application_manifest)
-        manifest = controller_manifest if FileTest.exist?(controller_manifest)
+        manifest = controller_manifest  if FileTest.exist?(controller_manifest)
         
         # TODO add rspec example
         return assets if manifest.nil?
@@ -93,21 +93,20 @@ module ViewAssets
       # includes all the assets inside this folder. Among these files, a file named
       # index.[js|css] will be taken as manifest file.
       def retrieve_action_assets
-        action_path = PathInfo.new("#{app_path.to_s}/#{@controller}")
-        single_action_path = PathInfo.new("#{action_path}/#{@action}.#{asset_extension}")
+        action_path         = PathInfo.new("#{app_path.to_s}/#{@controller}")
+        single_action_path  = PathInfo.new("#{action_path}/#{@action}.#{asset_extension}")
         indexed_action_path = PathInfo.new("#{action_path}/#{@action}")
-        manifest = nil
+        manifest            = nil
         
         manifest = single_action_path if FileTest.exist?(single_action_path)
         
         action_index = "#{indexed_action_path}/index.#{asset_extension}"
-        manifest = PathInfo.new(action_index) if FileTest.exist?(action_index)
+        manifest     = PathInfo.new(action_index) if FileTest.exist?(action_index)
 
         @assets.concat(retrieve_assets_from(manifest)) unless manifest.nil?
         
         if FileTest.exist?(indexed_action_path)
           auto_required_assets = Dir["#{action_path}/#{@action}/**/*.#{asset_extension}"]
-          puts "#{action_path}/#{@action}/**/*.#{asset_extension}"
           
           @assets.concat(auto_required_assets.map{ |ass| PathInfo.new(ass).rel })
         else 
@@ -150,7 +149,7 @@ module ViewAssets
       def retrieve_app_asset(required_asset)
         required_asset = PathInfo.new(required_asset)
 
-        dir = "#{app_path}/#{required_asset.match(/^\//) ? '' : "#{@controller}/"}"
+        dir   = "#{app_path}/#{required_asset.match(/^\//) ? '' : "#{@controller}/"}"
         asset = "#{required_asset}#{required_asset.with_ext? ? '' : ".#{asset_extension}"}"
         PathInfo.new(dir + asset).rel
       end
@@ -176,8 +175,8 @@ module ViewAssets
       def meta_retrieve(manifest_path, manifest)
         single_file_lib = PathInfo.new("#{manifest_path}/#{manifest}.#{asset_extension}")
 
-        manifest_dir = "#{manifest_path}/#{manifest}"
-        indexing_lib = PathInfo.new("#{manifest_dir}/index.#{asset_extension}")
+        manifest_dir               = "#{manifest_path}/#{manifest}"
+        indexing_lib               = PathInfo.new("#{manifest_dir}/index.#{asset_extension}")
         all_assets_in_manifest_dir = []
 
         real_manifest = nil
@@ -194,8 +193,8 @@ module ViewAssets
         
         # TODO add specs for dependent assets sequence
         retrieve_assets_from(real_manifest).flatten
-                                      .concat(all_assets_in_manifest_dir)
-                                      .uniq
+                                           .concat(all_assets_in_manifest_dir)
+                                           .uniq
       end
 
       def root

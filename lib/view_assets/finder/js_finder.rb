@@ -1,7 +1,5 @@
 module ViewAssets
   module Finder
-    # TODO: add rspec examples
-    # TODO: use JsAssetInfo module
     class JsFinder < Finder
       def assets_path
         # 'assets/javascripts'

@@ -1,14 +1,12 @@
 module ViewAssets
   module Finder
-    # TODO add rspec examples
     class CssFinder < Finder
       def assets_path
-        # 'assets/javascripts'
         CSS_PATH
       end
     
       def asset_extension
-        CSS_TYPE
+        CSS_EXT
       end
     
       def asset_type
