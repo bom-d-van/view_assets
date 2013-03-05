@@ -1,17 +1,10 @@
 require File.expand_path('./rspec_helper', File.dirname(__FILE__))
-TEST_ROOT = "/to/my/app"
 
-class Rails
-  def self.root
-    TEST_ROOT
-  end
-end
-
-require 'view_assets'
-include ViewAssets
-
+TEST_ROOT = "path/to/my/app"
 
 describe PathInfo do
+  before(:each) { PathInfo.any_instance.stub(:root).and_return(TEST_ROOT) }
+
   let(:abs_path) { PathInfo.new("#{TEST_ROOT}/app/javascripts/file.js") }
   let(:rel_path) { PathInfo.new("app/javascripts/file.js") }
   

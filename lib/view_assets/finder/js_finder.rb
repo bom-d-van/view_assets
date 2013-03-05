@@ -9,7 +9,7 @@ module ViewAssets
       end
     
       def asset_extension
-        JS_EXTENSION
+        JS_EXT
       end
     
       def asset_type

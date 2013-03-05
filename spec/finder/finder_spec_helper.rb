@@ -1,13 +1,9 @@
 require File.expand_path('../rspec_helper', File.dirname(__FILE__))
 
-class Rails
-  def self.root
-    File.dirname(__FILE__) + '/fixtures'
-  end
-end
-
 require 'view_assets'
 require 'view_assets/finder/core'
+
+include ViewAssets
 include ViewAssets::Finder
 
 # describe Finder do

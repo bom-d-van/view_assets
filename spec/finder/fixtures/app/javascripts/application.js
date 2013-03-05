@@ -1,2 +1,2 @@
-//= require_lib simple
-//= require_vendor simple
+//= require_vendor vendor1
+//= require_lib lib1

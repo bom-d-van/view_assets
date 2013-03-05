@@ -1,0 +1,1 @@
+//= require_vendor vendor3

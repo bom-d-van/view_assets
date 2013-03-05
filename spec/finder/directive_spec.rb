@@ -2,8 +2,6 @@
 # require 'view_assets/finder/directive'
 require File.expand_path('./finder_spec_helper', File.dirname(__FILE__))
 
-include ViewAssets::Finder
-
 describe Directive do
   let(:js_directive) { Directive.new JS_TYPE }
   let(:css_directive) { Directive.new CSS_TYPE }

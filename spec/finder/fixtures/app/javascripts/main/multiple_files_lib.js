@@ -1,1 +1,0 @@
-//= require_lib multiple_files

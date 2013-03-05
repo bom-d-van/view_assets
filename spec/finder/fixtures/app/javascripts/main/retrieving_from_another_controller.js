@@ -1,1 +1,0 @@
-//= require /another_controller/another_multiple_files_action/others

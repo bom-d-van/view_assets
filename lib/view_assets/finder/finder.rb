@@ -12,11 +12,15 @@
 module ViewAssets
   module Finder
     class Finder
-      attr_accessor :controller, :action, :assets, :parsed_manifests
+      attr_reader :assets, :parsed_manifests, :controller, :action
       def initialize
-        @controller = ''
-        @action = ''
-        @assets = []
+        empty
+      end
+      
+      def empty
+        @controller       = ''
+        @action           = ''
+        @assets           = []
         @parsed_manifests = []
       end
       
@@ -30,23 +34,24 @@ module ViewAssets
       #     :tagged => false
       # TODO: remove this quick fix used for adding a leading slash to make 
       def retrieve(options = {})
-        options[:full] ||= false
+        options[:full]   ||= false
         options[:tagged] ||= false
         
-        assets = []
-        parsed_manifest = []
-        controller = options[:controller] unless options[:controller].nil?
-        action = options[:action] unless options[:action]
+        @assets           = []
+        @parsed_manifests = []
+        @controller       = options[:controller] unless options[:controller].nil?
+        @action           = options[:action]     unless options[:action].nil?
+        
+        raise ":controller and :action can't be nil" if controller.nil? || action.nil?
         
         retrieve_controller_assets
         retrieve_action_assets
-        assets.uniq!
+        @assets.uniq!
         
-        assets.map! { |asset| PathInfo.new(asset).rel } if options[:full]
+        @assets.map! { |asset| PathInfo.new(asset).rel } if options[:full]
+        @assets.map! { |asset| tag "/#{asset}" }         if options[:tagged]
         
-        all_assets.map! { |asset| tag "/#{asset}" } if options[:tagged]
-        
-        assets
+        @assets
       end
 
       private
@@ -74,12 +79,11 @@ module ViewAssets
         manifest = nil
         manifest = application_manifest if FileTest.exist?(application_manifest)
         manifest = controller_manifest if FileTest.exist?(controller_manifest)
-      
+        
         # TODO add rspec example
         return assets if manifest.nil?
-
-        assets = manifest.nil? ? [] : retrieve_assets_from(manifest)
-        assets << manifest.rel
+        
+        @assets.concat(retrieve_assets_from(manifest) << manifest.rel)
       end
 
       ##
@@ -91,46 +95,41 @@ module ViewAssets
       def retrieve_action_assets
         action_path = PathInfo.new("#{app_path.to_s}/#{controller}")
         single_action_path = PathInfo.new("#{action_path}/#{action}.#{asset_extension}")
-        indexed_action_path = PathInfo.new("#{action_path}/#{action}/index.#{asset_extension}")
-
-        # find files in the conventional directory
+        indexed_action_path = PathInfo.new("#{action_path}/#{action}")
         manifest = nil
-        indexed_action = false
+        
         manifest = single_action_path if FileTest.exist?(single_action_path)
-        manifest = indexed_action_path if (indexed_action = FileTest.exist?(indexed_action_path))
+        
+        action_index = "#{indexed_action_path}/index.#{asset_extension}"
+        manifest = PathInfo.new(action_index) if FileTest.exist?(action_index)
 
         # TODO add rspec example
-        return assets if manifest.nil?
-
-        assets = manifest.nil? ? [] : retrieve_assets_from(manifest)
-        if indexed_action
-          assets.concat(Dir["#{action_path}/#{action}/**/*.#{asset_extension}"].map { |ass| PathInfo.new(ass).rel })
+        @assets.concat(retrieve_assets_from(manifest)) unless manifest.nil?
+        
+        if FileTest.exist?(indexed_action_path)
+          auto_required_assets = Dir["#{action_path}/#{action}/**/*.#{asset_extension}"]
+          puts "#{action_path}/#{action}/**/*.#{asset_extension}"
+          
+          @assets.concat(auto_required_assets.map{ |ass| PathInfo.new(ass).rel })
         else 
-          assets << manifest.rel
+          @assets << manifest.rel
         end
       end
 
       # start point of parsing dependent assets
       def retrieve_assets_from(manifest)
-        return [] if parsed_manifest.include?(manifest)
-        
         # TODO rspec examples for non-existed files
-        return [] unless FileTest.exist?(manifest)
-      
-        assets = []
+        return [] if @parsed_manifests.include?(manifest) || !FileTest.exist?(manifest)
+        
+        required_assets = []
         directive = Directive.new(asset_type)
 
         Pathname.new(manifest).each_line do |line|
-          # break if directive.ending_directive?(l) # TODO: add ending_directive support
-          next unless directive.legal_directive?(line)
-        
-          assets.concat(analyze(*directive.parse(line)))
+          required_assets.concat(analyze(*directive.parse(line))) if directive.legal_directive?(line)
         end
+        @parsed_manifests.push(manifest)
         
-        parsed_manifest.push(manifest)
-
-        # TODO find another way to realize this instead of using "flatten" method
-        assets.flatten
+        required_assets.flatten
       end
 
       def analyze(asset_category, path_params)
@@ -176,10 +175,10 @@ module ViewAssets
       # todo BUG => can't retrieve assets with slash-asterisk(/*= xxx */) directive.
       # todo add specs for testing required folders without index
       def meta_retrieve(manifest_path, manifest)
-        single_file_lib = PathInfo.new("#{manifest_path}/#{manifest}")
+        single_file_lib = PathInfo.new("#{manifest_path}/#{manifest}.#{asset_extension}")
 
         manifest_dir = "#{manifest_path}/#{manifest}"
-        indexing_lib = PathInfo.new("#{manifest_dir}/index")
+        indexing_lib = PathInfo.new("#{manifest_dir}/index.#{asset_extension}")
         all_assets_in_manifest_dir = []
 
         real_manifest = nil
@@ -193,7 +192,7 @@ module ViewAssets
           
           all_assets_in_manifest_dir = Dir["#{manifest_dir}/**/*.#{asset_extension}"].map { |file| PathInfo.new(file).rel }
         end
-
+        
         # TODO add specs for dependent assets sequence
         retrieve_assets_from(real_manifest).flatten
                                       .concat(all_assets_in_manifest_dir)
@@ -206,17 +205,17 @@ module ViewAssets
 
       # TODO add tests
       def app_path
-        "#{root}app/#{assets_path}"
+        "#{root}/app/#{assets_path}"
       end
     
       # TODO add tests
       def lib_path
-        "#{root}lib/#{assets_path}"
+        "#{root}/lib/#{assets_path}"
       end
     
       # TODO add tests
       def vendor_path
-        "#{root}vendor/#{assets_path}"
+        "#{root}/vendor/#{assets_path}"
       end
     end
   end

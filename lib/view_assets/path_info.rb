@@ -3,7 +3,7 @@ module ViewAssets
     def ==(pi)
       pi = PathInfo.new(pi) unless pi.kind_of?(PathInfo)
       
-      self.rel == pi
+      self.rel.to_s == pi.rel.to_s
     end
     
     def initialize(path)
@@ -48,7 +48,7 @@ module ViewAssets
     end
     
     def root
-      "#{ViewAssets::APP_ROOT}"
+      "#{APP_ROOT}"
     end
   end
 end
