@@ -16,14 +16,14 @@ module ViewAssets
       def initialize
         empty
       end
-      
+
       def empty
         @controller       = ''
         @action           = ''
         @assets           = []
         @parsed_manifests = []
       end
-      
+
       ##
       # This method is the ENTRY of assets finder after its initializtion.
       # It returns all asset paths wrapped inside a appropriated html
@@ -32,35 +32,35 @@ module ViewAssets
       #     :action => nil
       #     :full => false
       #     :tagged => false
-      # TODO: remove this quick fix used for adding a leading slash to make 
-      def retrieve(options = {})
+      # TODO: remove this quick fix used for adding a leading slash to make
+      def retrieve(controller, action, options = {})
         options[:full]   ||= false
         options[:tagged] ||= false
-        
+
         @assets           = []
         @parsed_manifests = []
-        @controller       = options[:controller] unless options[:controller].nil?
-        @action           = options[:action]     unless options[:action].nil?
-        
-        raise ":controller and :action can't be nil" if controller.nil? || action.nil?
-        
+        @controller       = controller unless controller.nil?
+        @action           = action     unless action.nil?
+
+        raise ":controller and :action can't be nil" if @controller.nil? || @action.nil?
+
         retrieve_controller_assets
         retrieve_action_assets
         @assets.uniq!
-        
-        @assets.map! { |asset| PathInfo.new(asset).rel } if options[:full]
-        @assets.map! { |asset| tag "/#{asset}" }         if options[:tagged]
-        
+
+        @assets.map! { |asset| PathInfo.new(asset).abs } if options[:full]
+        @assets.map! { |asset| tag "/#{asset.rel}" }         if options[:tagged]
+
         @assets
       end
 
       private
-    
+
       ##
       # Check out whether all assets is existed or not
       # It is better to be turned off in production
       def verify
-        all_assets.each do |asset| 
+        all_assets.each do |asset|
           raise AssetNotFound.new("File #{asset} DOEST EXIST") unless FileTest.exist?(asset.abs)
         end
       end
@@ -79,10 +79,10 @@ module ViewAssets
         manifest = nil
         manifest = application_manifest if FileTest.exist?(application_manifest)
         manifest = controller_manifest  if FileTest.exist?(controller_manifest)
-        
+
         # TODO add rspec example
         return assets if manifest.nil?
-        
+
         @assets.concat(retrieve_assets_from(manifest) << manifest.rel)
       end
 
@@ -97,19 +97,19 @@ module ViewAssets
         single_action_path  = PathInfo.new("#{action_path}/#{@action}.#{asset_extension}")
         indexed_action_path = PathInfo.new("#{action_path}/#{@action}")
         manifest            = nil
-        
+
         manifest = single_action_path if FileTest.exist?(single_action_path)
-        
+
         action_index = "#{indexed_action_path}/index.#{asset_extension}"
         manifest     = PathInfo.new(action_index) if FileTest.exist?(action_index)
 
         @assets.concat(retrieve_assets_from(manifest)) unless manifest.nil?
-        
+
         if FileTest.exist?(indexed_action_path)
           auto_required_assets = Dir["#{action_path}/#{@action}/**/*.#{asset_extension}"]
-          
+
           @assets.concat(auto_required_assets.map{ |ass| PathInfo.new(ass).rel })
-        else 
+        else
           @assets << manifest.rel
         end
       end
@@ -119,14 +119,14 @@ module ViewAssets
         # TODO rspec examples for non-existed files
         return [] if @parsed_manifests.include?(manifest) || !FileTest.exist?(manifest)
         @parsed_manifests.push(manifest)
-        
+
         required_assets = []
         directive = Directive.new(asset_type)
 
         Pathname.new(manifest).each_line do |line|
           required_assets.concat(analyze(*directive.parse(line))) if directive.legal_directive?(line)
         end
-        
+
         required_assets.flatten
       end
 
@@ -143,7 +143,7 @@ module ViewAssets
 
       # asset.js
       # /:another_controller/asset.js
-      # => 
+      # =>
       # /path/to/app/public/app/javascript/:controller/asset.js
       # /path/to/app/public/app/javascript/:another_controller/asset.js
       def retrieve_app_asset(required_asset)
@@ -183,14 +183,14 @@ module ViewAssets
         if FileTest.exist?(single_file_lib)
           real_manifest = single_file_lib
           # TODO refactor => add for a hotfix loading required folders without index
-          
+
           all_assets_in_manifest_dir = [real_manifest.rel]
         else FileTest.exist?(indexing_lib)
           real_manifest = indexing_lib
-          
+
           all_assets_in_manifest_dir = Dir["#{manifest_dir}/**/*.#{asset_extension}"].map { |file| PathInfo.new(file).rel }
         end
-        
+
         # TODO add specs for dependent assets sequence
         retrieve_assets_from(real_manifest).flatten
                                            .concat(all_assets_in_manifest_dir)
@@ -205,12 +205,12 @@ module ViewAssets
       def app_path
         "#{root}/app/#{assets_path}"
       end
-    
+
       # TODO add tests
       def lib_path
         "#{root}/lib/#{assets_path}"
       end
-    
+
       # TODO add tests
       def vendor_path
         "#{root}/vendor/#{assets_path}"

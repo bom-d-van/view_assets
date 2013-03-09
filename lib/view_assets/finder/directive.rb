@@ -91,7 +91,7 @@ module ViewAssets
       # TODO BUG => rspec examples is unqualified on slash-asterisk syntax for css
       #             can't detect mistakes like this: `^/\*=\s#{requiring_type}\s(?<path_params>.*)*\s\*/$`
       def generate_formula(requiring_type = 'require')
-        if javascript? asset_type
+        if javascript?(asset_type)
           %r{
               ^//=\s#{requiring_type}\s(?<path_params>.*)$  # double-slash syntax
             |

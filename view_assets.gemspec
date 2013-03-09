@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "sqlite3"
   s.add_development_dependency "yui-compressor"
-  
+
   s.add_development_dependency "rspec"
   s.add_development_dependency "ZenTest", "4.8.3"
   s.add_development_dependency "rspec-nc"
