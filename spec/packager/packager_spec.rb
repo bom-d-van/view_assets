@@ -2,6 +2,8 @@ require File.expand_path('./packager_helper', File.dirname(__FILE__))
 
 PACKAGER_TEST_ROOT = "#{File.dirname(__FILE__)}/fixtures/packager"
 
+include ViewAssets::Finder
+
 describe JsPackager do
   before(:each) do
     JsFinder.any_instance.stub(:root).and_return(PACKAGER_TEST_ROOT)

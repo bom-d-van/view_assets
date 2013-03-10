@@ -110,7 +110,7 @@ module ViewAssets
 
           @assets.concat(auto_required_assets.map{ |ass| PathInfo.new(ass).rel })
         else
-          @assets << manifest.rel
+          @assets << manifest.rel unless manifest.nil?
         end
       end
 
@@ -198,7 +198,7 @@ module ViewAssets
       end
 
       def root
-        APP_ROOT
+        Rails.public_path
       end
 
       # TODO add tests

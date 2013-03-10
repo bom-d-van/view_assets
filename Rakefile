@@ -36,7 +36,7 @@ task :default => :test
 
 task :lines do
   lines, codelines, total_lines, total_codelines = 0, 0, 0, 0
-  
+
   FileList["#{ ENV['PWD'] }/**/*.rb"].each do |file_name|
     next if file_name =~ /vendor/
     File.open(file_name, 'r') do |f|

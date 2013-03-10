@@ -49,7 +49,7 @@ module ViewAssets
     end
 
     def root
-      "#{APP_ROOT}"
+      "#{Rails.public_path}"
     end
 
     def lib?

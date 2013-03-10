@@ -6,35 +6,50 @@ module ViewAssets
     require 'yaml'
 
     class Packager
-      def package
+      # targets = { :controller => [:action1, :action2], ... }
+      # options:
+      #   :verbal => false
+      def package(targets = {}, options = {})
+        options = { :verbal => false, :compress => true, :manifest => true }.update(options)
+        targets = actions_map.retrieve if targets.empty?
+
         # preparing envs
         FileUtils.mkdir_p("#{root}/assets/#{CSS_PATH}")
         FileUtils.mkdir_p("#{root}/assets/#{JS_PATH}")
 
         # packaging
         manifest = {}
-        actions_map.retrieve.each do |controller, actions|
+        targets.each do |controller, actions|
           actions.map do |action|
+            # retrieving asset sources
             sources = finder.retrieve(controller, action)
+            if sources.empty?
+              puts "Asset: #{controller}.#{action} not existed" if options[:verbal]
+              next
+            elsif options[:verbal]
+              puts "Packaging: #{controller}.#{action}"
+            end
+
+            # package assets: concatenate | compress | fingerprint
             content = concatenate(sources)
-            compressed_content = compress(content)
+            compressed_content = options[:compress] ? compress(content) : content
             file_name = "#{controller}_#{action}-#{fingerprint(compressed_content)}.#{asset_ext}"
 
-            manifest["/assets/#{controller}_#{action}.#{asset_ext}"] = "/assets/#{file_name}"
+            # save indices of packaged assets
+            manifest["/assets/#{asset_path}/#{controller}_#{action}.#{asset_ext}"] = "/assets/#{asset_path}/#{file_name}"
 
-            File.open("#{root}/assets/#{asset_path}/#{file_name}", 'w') do |file|
-              file << compressed_content
-            end
+            # save packaged assets
+            File.open("#{root}/assets/#{asset_path}/#{file_name}", 'w') { |file| file << compressed_content }
           end
         end
 
-        File.open("#{root}/assets/#{asset_path}/manifest.yml", 'w') do |file|
-          YAML.dump(manifest, file)
-        end
+        File.open("#{root}/assets/#{asset_path}/manifest.yml", 'w') { |file| YAML.dump(manifest, file) } if options[:manifest]
+
+        return manifest
       end
 
       def root
-        APP_ROOT
+        Rails.public_path
       end
 
       private
@@ -42,7 +57,7 @@ module ViewAssets
       def concatenate(sources)
         sources.inject("") do |content, source|
           content += File.open(source.abs, 'r').read
-          # content += "\n;\n"
+          content += (asset_ext == 'js' ? "\n;\n" : "")
         end
       end
 
@@ -61,7 +76,7 @@ module ViewAssets
         JsActionsMap.new
       end
 
-      FINDER = JsFinder.new
+      FINDER =  ViewAssets::Finder::JsFinder.new
       def finder
         FINDER
       end
@@ -85,7 +100,7 @@ module ViewAssets
         CssActionsMap.new
       end
 
-      CSS_FINDER = CssFinder.new
+      CSS_FINDER = ViewAssets::Finder::CssFinder.new
       def finder
         CSS_FINDER
       end
