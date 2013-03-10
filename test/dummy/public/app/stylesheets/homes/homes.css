@@ -1,0 +1,129 @@
+/** 
+ *= require_vendor menu  
+ *= require_vendor ext-all-debug  
+ *= require_lib tool_box 
+ *= require_lib msg
+ */ 
+ 
+body { 
+	margin: 0; 
+	padding: 0; 
+} 
+ 
+p { margin: 0 0 10px 0; padding: 0; } 
+img {  
+  border: none; 
+  margin: 0 150px; 
+} 
+blockquote { font-style: italic; margin: 0 0 0 10px;} 
+cite { font-weight: bold; color:#333; } 
+cite span { color: #333; } 
+em { color: #333; font-weight: 400 } 
+ 
+ 
+.cleaner { clear: both } 
+.h10 { height: 10px } 
+.h20 { height: 20px } 
+.h30 { height: 30px } 
+.h40 { height: 40px } 
+.h50 { height: 50px } 
+.h60 { height: 60px } 
+ 
+.float_l { float: left } 
+.float_r { float: right } 
+ 
+ 
+.image_fl { float: left; margin: 3px 20px 0 0 } 
+.image_fr { float: right; margin: 3px 0 0 20px } 
+ 
+.tmo_list { margin: 20px 0 20px 10px; padding: 0; list-style: none } 
+.tmo_list li {  margin: 0; padding: 0 0 5px 15px; background: url(../../images/homes/templatemo_list.jpg) no-repeat scroll 0 4px  } 
+ 
+ 
+#templatemo_wrapper { 
+	width: 806px; 
+	margin: 0 auto; 
+	padding-left: 6px; 
+/*	background: url(images/templatemo_body.jpg) center top no-repeat; */ 
+} 
+ 
+#templatmeo_header { 
+	width: 800px; 
+	height: 40px; 
+	padding: 40px 0 40px 6px; 
+} 
+ 
+#site_title { float: left; } 
+#site_title h1 { margin: 0; padding: 0 } 
+#site_title h1 a { display: block; width: 160px; height: 60px; background:url(../../images/homes/templatemo_logo.png)  no-repeat top left; color: #000; font-size: 40px; font-weight: 400; outline: none; text-indent: -10000px; } 
+ 
+#templatemo_menu { float: right; margin-top: 20px; } 
+#templatemo_menu ul { padding: 0; margin: 0; list-style: none; } 
+#templatemo_menu ul li { margin: 0; padding: 0; display: inline-block } 
+#templatemo_menu ul li a { 
+	float: left; 
+	display: block; 
+	font-size: 18px; 
+	color: #333;	 
+	margin-left: 40px; 
+	text-decoration: none; 
+	font-weight: 400; 
+	outline: none; 
+} 
+ 
+#templatemo_menu ul li a:hover, #templatemo_menu ul .current { 
+	color: #000; 
+	text-decoration: underline; 
+} 
+ 
+#templatemo_main { 
+	clear: both; 
+	width: 800px; 
+	margin: 0 0 0 6px; 
+} 
+ 
+.content_top { clear: both; height: 55px } 
+.content_box {  
+  position: relative;  
+  width: 550px;  
+  margin-bottom: 30px;  
+  padding: 70px 70px 70px 76px; 
+  background: #BDD2FF; 
+} 
+ 
+.content_title { position: absolute; width: 106px; height: 104px; 
+ top: -5px; left: -6px; } 
+ 
+.content_home { background: url(../../images/homes/templatemo_content_home.png) no-repeat } 
+ 
+.col_w310 { width: 310px } 
+ 
+.post_box { width: 310px; margin-bottom: 30px; padding-bottom: 20px;  } 
+.post_header { border-top: 3px solid #999; border-bottom: 1px solid #ccc; padding: 5px; margin-bottom: 20px } 
+.post_box h3 { font-size: 24px; line-height: 34px; margin-bottom: 15px } 
+.post_box p.post_meta { font-size: 10px; margin-bottom: 0; padding-bottom: 0 } 
+ 
+#gallery { margin: 0; padding: 0 } 
+#gallery ul { margin: 0; padding: 0} 
+#gallery ul li { display: block; position: relative; display: inline-block; width: 300px; height: 168px; margin: 0 30px 30px 0 } 
+#gallery ul img { z-index: 1000; position: absolute; top: 0; left: 0; width: 300px; height: 150px; } 
+#gallery ul span {  position: absolute; border: 0; left: 0; width: 300px; height: 168px; background: url(../../images/homes/templatemo_image_bg.jpg) no-repeat } 
+ 
+#contact_form { padding: 0; width: 300px } 
+#contact_form form { margin: 0px; padding: 0px; } 
+ 
+#contact_form form .input_field { width: 290px; padding: 5px; color: #666; border: 1px solid #ccc;  background: #fff; } 
+#contact_form form label { display: block; width: 100px; margin-right: 10px; margin-bottom: 3px; font-size: 14px; } 
+ 
+#contact_form form textarea { width: 288px; height: 150px; padding: 5px; color: #666; border: 1px solid #ccc;  background: #fff; font-family: Arial, Helvetica, sans-serif; } 
+#contact_form form .submit_btn { background: #e1dc5e; color: #000; cursor: pointer; border: 1px solid #c9c447; padding: 7px 14px; margin-right: 30px; } 
+ 
+#templatemo_footer { 
+	clear: both; 
+	width: 800px; 
+	padding: 0 0 20px 6px; 
+	text-align: center; 
+	background: url(../../images/homes/templatemo_footer.jpg) center top no-repeat 
+} 
+ 
+#templatemo_footer a { color: #000 } 

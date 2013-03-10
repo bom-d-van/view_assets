@@ -1,0 +1,20 @@
+div .thumb-view img {
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  margin: 1px 10px;
+  height: 500px;
+}
+
+.thumb-wrap b { 
+  color: #777;
+  display: block;
+}
+
+.thumb-wrap .info { 
+  margin: 0, 10px;
+}
+
+#wandoToolboxDataView .app-title {
+    text-align: center;
+}

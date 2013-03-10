@@ -1,1 +1,8 @@
-/*= require_vendor vendor1 */
+/**
+ *= require_vendor ext-all-debug 
+ *= require_vendor menu
+ *= require_vendor filter 
+ *= require_lib msg 
+ *= require_lib button_icon
+ *= require_lib tool_box
+ */

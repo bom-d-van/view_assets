@@ -1,0 +1,144 @@
+a:link, a:visited {
+    text-decoration: none;
+}
+
+html {
+    font-family:Arial,Verdana,Helvetica;
+    font-size:14px;
+}
+
+/*****	menu  *****/
+#nav {
+    font-size: 13px;
+	width: 100%;
+	height: 28px;
+    margin: 0 auto;
+    padding: 0;
+    position: relative;
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#074E7C), to(#095F93));
+	background-image: -moz-linear-gradient(top, #095F93, #095F93);
+    box-shadow: 0 0 10px 0 #111;
+    /*z-index: 10000;*/
+}
+
+#logo {
+    width: 170px;
+    height: 100%;
+    float: left;
+    display: block;
+}
+
+#user {
+    float: right;
+    width: 67px;
+    height: 100%;
+    cursor: pointer;
+}
+
+#logo, #user {
+    background-color: transparent;
+    font-weight: bold;
+    font-family: Arial, 'Liberation Sans', 'DejaVu Sans', sans-serif;
+    text-align: center;
+    line-height: 25px;
+    color: whitesmoke;
+}
+
+#logo a {
+    cursor: pointer;
+}
+
+#logo a:visited {
+    color: whitesmoke;
+}
+
+#logo a:hover, #user:hover {
+    color: #E52B50;
+}
+
+#user-extension {
+    display:none;
+    position: absolute;
+    width: 300px;
+    height: 200px;
+    background: white;
+    top: 28px;
+    right: 0;
+    border: 1px solid #095F93;
+    border-top: 0px;
+    border-right: 0;
+    box-shadow: -5px 5px 15px -5px #111;
+}
+
+/***** Nav ***** /*/
+#toolbar {
+float:right;
+margin-top:3px;
+margin-right:5px;
+font-weight:bold;
+}
+
+
+#toolbar a, #toolbar a:visited, #toolbar a:hover {
+   border: none;
+   padding:0;
+   margin:0;
+   font-weight: normal;
+   color: #FFFFFF;
+}
+
+#toolbar a:hover {
+   font-weight: normal;
+   color: #CB4415;
+}
+
+#toolbar a.active {
+   font-weight: bold;
+}
+
+
+/*#nav {*/
+/*   background-color: #507ACC;*/
+/*   box-shadow: 0 0 10px 0 #111;*/
+/*   margin: 0px 0px 0px auto;*/
+/*   width: 100%;*/
+/*   float: left;*/
+/*   color: #ccc;*/
+/*   position: relative;*/
+/*}*/
+
+/*#nav ul {*/
+/*   float: left;*/
+/*   padding: 0;*/
+/*   margin: 2px 12px 2px 0;*/
+/*   text-align: left;*/
+/*}*/
+
+/*#nav li {*/
+/*   display:inline;*/
+/*   padding: 0;*/
+/*   margin: 0;*/
+/*   margin-left: 8px;*/
+/*}*/
+
+/*#nav li span.disabled {*/
+/*   color: #999;*/
+/*}*/
+
+
+/*版本样式,鉴于不同浏览器兼容，取消右浮动 * /*/
+/*#beta {*/
+/*  font-size:11px;*/
+/*    padding-left:3px; * /*/
+/*    margin-left: -5px;*/
+/*}*/
+
+/*菜单导航与下面布局空留的位置 * /*/
+/*#layout-blank{ */
+/*    height:65px*/
+/*}*/
+
+/*#session a {*/
+/*    cursor: pointer;*/
+/*}*/
+

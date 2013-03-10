@@ -1,0 +1,1 @@
+Ext.ns("Wando.notify");Wando.notify=function(a,b){if(window.webkitNotifications){if(window.webkitNotifications.checkPermission()==0){var c=window.webkitNotifications.createNotification("images/desktop_notifications/cy.png",a,b);c.onclick=function(){this.cancel()};c.show()}else{window.webkitNotifications.requestPermission(notify)}}};

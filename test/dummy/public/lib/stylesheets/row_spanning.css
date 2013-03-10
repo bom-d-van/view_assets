@@ -1,0 +1,29 @@
+/* ====================================
+* = Extjs Row Spanning(Added by Van) =
+* ====================================
+*/
+.grid-row-span .x-grid-row {
+    border-bottom: 0;
+}
+
+.grid-row-span .x-grid-col {
+    border-bottom: 1px solid #ededed;
+}
+
+.grid-row-span .row-span {
+    border-bottom: 1px solid #fff;
+}
+
+.grid-row-span .row-span-first {
+    position: relative;
+    overflow: visible;
+}
+
+.grid-row-span .row-span-first .x-grid-cell-inner {
+    position: absolute;
+    overflow: visible;
+}
+
+.grid-row-span .row-span-last {
+    border-bottom: 1px solid #ededed;
+}

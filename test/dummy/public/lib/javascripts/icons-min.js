@@ -1,0 +1,1 @@
+Ext.ns("Wando.icons");Wando.icons={add:"add",save:"save",edit:"table_edit",check:"check",select:"check",deleteVanCorrect:"table_row_delete",deleteAll:"delete",query:"magnifier",backup:"database",print:"print",calculator:"calculator",options:"options",importVanCorrect:"import",arrowLeft:"icon-prev",user:"user",arrowRight:"icon-next",expand:"expand",copy:"copy",excel:"excel"};

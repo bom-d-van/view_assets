@@ -1,0 +1,63 @@
+/*!
+ * Ext JS Library 3.3.1
+ * Copyright(c) 2006-2010 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
+ */
+div .thumb-view .x-panel-body{
+	background: white;
+	font: 11px Arial, Helvetica, sans-serif;
+}
+
+div .thumb-view .thumb{
+  /*background: #dddddd;*/
+	padding: 3px;
+}
+
+div .thumb-view .thumb img{
+	height: 60px;
+  /*width: 80px;*/
+}
+
+div .thumb-view .thumb-wrap{
+	float: left;
+	margin: 4px;
+	margin-right: 0;
+	padding: 5px;
+}
+
+div .thumb-view .thumb-wrap span{
+	display: block;
+	overflow: hidden;
+	text-align: left;
+}
+
+div .thumb-view .x-view-over{
+    border:1px solid #dddddd;
+    background: #efefef url(../../images/default/grid/row-over.gif) repeat-x left top;
+    padding: 4px;
+}
+
+div .thumb-view .x-view-selected{
+	background: #eff5fb url(../../images/images/selected.gif) no-repeat right bottom;
+	border:1px solid #99bbe8;
+	padding: 4px;
+}
+
+div .thumb-view .x-view-selected .thumb{
+	background:transparent;
+}
+
+div .thumb-view .loading-indicator {
+	font-size:11px;
+	background-image:url('../../images/default/grid/loading.gif');
+	background-repeat: no-repeat;
+	background-position: left;
+	padding-left:20px;
+	margin:10px;
+}
+
+#details-views { 
+  padding: 5px;
+}
+

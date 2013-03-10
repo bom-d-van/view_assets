@@ -1,0 +1,1 @@
+Wando.callback={success:function(){Wando.loadMask.hide();Wando.msg.info("","操作成功")},failure:function(a,c){Wando.loadMask.hide();if(a.status==-1){var b="操作超时，网络异常，检查后请重试..."}else{var b=Ext.decode(a.responseText).root.error_msg}Wando.msg.error("",b)},formFailure:function(a,b){Wando.loadMask.hide();Wando.msg.error("",Ext.decode(b.response.responseText).root.error_msg)}};
