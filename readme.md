@@ -1,6 +1,6 @@
-# ViewAssets
-A new method to manage assets in a rails project.   
-Instead of using the default assets managing style in rails 3.2, this gem will introduce a new way to manage your assets.   
+# ViewAssets [![Build Status](https://travis-ci.org/bom-d-van/view_assets.png?branch=master)](https://travis-ci.org/bom-d-van/view_assets)
+A new method to manage assets in a rails project.
+Instead of using the default assets managing style in rails 3.2, this gem will introduce a new way to manage your assets.
 This is only a prototype of the whole project, the fullfledged version will publish soon.
 It works like assetpipeline, but comes with different conventions. It doesn't include all your assets simply even if you have view/page or controller specific assets. It is page-specific.
 
