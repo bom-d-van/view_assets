@@ -2,8 +2,6 @@ require 'pathname'
 
 # Introduction is in readme.md
 module ViewAssets
-  require 'view_assets/railtie'
-
   APP_FOLDER = 'app'
   LIB_FOLDER = 'lib'
   VENDOR_FOLDER = 'vendor'
@@ -29,6 +27,7 @@ module ViewAssets
 
   module_function :tag
 
+  require 'view_assets/railtie'
   require 'view_assets/error'
   require 'view_assets/path_info'
 end
