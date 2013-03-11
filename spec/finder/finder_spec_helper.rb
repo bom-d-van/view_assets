@@ -6,221 +6,263 @@ require 'view_assets/finder/core'
 include ViewAssets
 include ViewAssets::Finder
 
-# describe Finder do
-#   # let(:empty_af) { AssetsFinder.new('', '', '') }
-#   let(:af) { Finder.new }
-#   # let(:af) { AssetsFinder.new(FIXTURE_ROOT, '', '') }
-#   # let(:af) { AssetsFinder.new(FIXTURE_ROOT, 'main', '') }
-#   # let(:af) { AssetsFinder.new(FIXTURE_ROOT, 'main', 'action_test') }
-#   let(:action_test_assets) { %w(vendor/javascripts/simple.js lib/javascripts/simple.js app/javascripts/another_controller/action1.js app/javascripts/main/action_test.js) }
-#   
-#   before(:each) do
-#     Finder.any_instance.stub(:asset_extension).and_return(JS_EXT)
-#     Finder.any_instance.stub(:asset_type).and_return(JS_TYPE)
-#     Finder.any_instance.stub(:assets_path).and_return(JS_PATH)
-#   end
-#   
-#   describe '#retrieve_app_asset' do
-#     it 'can retrieve asset of other actions in the same controller' do
-#       asset = "app/javascripts/main/multiple_files_action/others.js"
-#       
-#       af.send(:retrieve_app_asset, 'multiple_files_action/others').should == asset
-#     end
-#     
-#     it 'can retrieve asset from a different controller' do
-#       asset = "app/javascripts/another_controller/another_multiple_files_action/others.js"
-#       
-#       af.send(:retrieve_app_asset, '/another_controller/another_multiple_files_action/others.js').should == asset
-#     end
-#   end
-#   
-#   # for lib dependency
-#   # FIXME convert this description of example group for "meta_retrieve" method
-#   describe '#retrieve_lib_assets' do
-#     context 'one-file library' do
-#       it 'has corresponding requiring sequence' do
-#         pending 'need to be corrected'
-#         libs = %w(lib3 lib1).map { |f| "lib/javascripts/#{ f }.js" }
-#         af.send(:retrieve_lib_assets, 'lib1').should == libs
-#       end
-#       
-#       it 'has not corresponding requiring sequence' do
-#         pending 'need to be corrected'
-#         libs = %w(lib1 lib3).map { |f| "lib/javascripts/#{ f }.js" }
-#         af.send(:retrieve_lib_assets, 'lib1').should_not == libs
-#       end
-#     end
-#     
-#     it 'indexing(multiple-file) library' do
-#       pending 'need to be corrected'
-#       libs = %w(index others).map { |f| "lib/javascripts/lib2/#{ f }.js" }
-#       af.send(:retrieve_lib_assets, 'lib2').should == libs
-#     end
-#     
-#     it 'other-library-dependent library' do
-#       # it('one-file library dependency') { pending 'unimplemeted' }
-#       # it('indexing library dependency') { pending 'unimplemeted' }
-#       pending 'need to be corrected'
-#       libs = %w(lib3 lib1 lib2/index lib2/others lib4/index).map { |f| "lib/javascripts/#{ f }.js" }
-#       af.send(:retrieve_lib_assets, 'lib4').should == libs
-#     end
-#   end
-# 
-#   it '#requrie_vendor_assets' do
-#     pending 'consider whether is this example still necessary?'
-#     # vendors = %w(vendor1 vendor2/index vendor2/others).map { |f| "vendor/javascripts/#{ f }.js" }
-#     # af.send(:retrieve_vendor_assets, 'vendor2').should == vendors
-#   end
-#   
-#   it 'self-loop dependency declaration' do
-#     pending 'unimplemeted'
-#   end
-#   
-#   describe '#retrieve_assets_from' do
-#     context 'when retrieving app assets from actions' do
-#       it 'in the same controller' do
-#         required_assets = ["app/javascripts/main/multiple_files_action/others.js"]
-#         app_manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/retrieving_from_another_action.js"
-#         
-#         af.send(:retrieve_assets_from, app_manifest).should == required_assets
-#       end
-#       
-#       it 'from a different controller' do
-#         required_assets = ["app/javascripts/another_controller/another_multiple_files_action/others.js"]
-#         app_manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/retrieving_from_another_controller.js"
-#         
-#         af.send(:retrieve_assets_from, app_manifest).should == required_assets
-#       end
-#     end
-#     
-#     shared_examples 'retrievable' do |type|
-#       it "can retrieve a standalone #{ type }" do
-#         required_assets = ["#{ type }/javascripts/simple.js"]
-#         manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/simple_#{ type }.js"
-#         
-#         af.send(:retrieve_assets_from, manifest).should == required_assets
-#       end
-#     
-#       # # TODO think about the importance of order during the requiring.
-#       # # If I write "%w(others index)", this example will fail
-#       it "can retrieve a multiple-files #{ type }" do
-#         required_assets = %w(index others).map { |f| "#{ type }/javascripts/multiple_files/#{ f }.js" }
-#         manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/multiple_files_#{ type }.js"
-#         
-#         af.send(:retrieve_assets_from, manifest).should == required_assets
-#       end
-#       
-#       it "can retrieve vendor that depends on other #{ type }" do
-#         required_assets = %w(multiple_files/index multiple_files/others simple nested).map { |f| "#{ type }/javascripts/#{ f }.js" }
-#         manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/nested_#{ type }.js"
-#         
-#         af.send(:retrieve_assets_from, manifest).should == required_assets
-#       end
-#       
-#       it "can retrieve deeply nested #{ type }" do
-#         required_assets = %w(multiple_files/index multiple_files/others simple nested complicated_nested).map { |f| "#{ type }/javascripts/#{ f }.js" }
-#         manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/complicated_nested_#{ type }.js"
-#         
-#         af.send(:retrieve_assets_from, manifest).should == required_assets
-#       end
-#       
-#       it "can retrieve multiple-files and deeply-nested #{ type }" do
-#         required_assets = %w(multiple_files/index multiple_files/others simple nested complicated_nested  to_be_required multiple_files_with_nested/index multiple_files_with_nested/others).map { |f| "#{ type }/javascripts/#{ f }.js" }
-#         manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/multiple_files_with_nested_#{ type }.js"
-#         
-#         af.send(:retrieve_assets_from, manifest).should == required_assets
-#       end
-#     end
-#     
-#     context 'when retrieving vendor assets' do
-#       it_should_behave_like 'retrievable', 'vendor'
-#     end
-#     
-#     context 'when retrieving lib assets' do
-#       it_should_behave_like 'retrievable', 'lib'
-#       
-#       context 'when depending on a vendor' do
-#         it 'can depends on a simple vendor' do
-#           required_assets = %w(vendor/javascripts/simple.js lib/javascripts/with_a_simple_vendor.js)
-#           manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/lib_with_a_simple_vendor.js"
-# 
-#           af.send(:retrieve_assets_from, manifest).should == required_assets
-#         end
-# 
-#         it 'can depends on a multiple-file vendor' do
-#           required_assets = %w(vendor/javascripts/multiple_files/index.js vendor/javascripts/multiple_files/others.js lib/javascripts/with_a_multiple_files_vendor.js)
-#           manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/lib_with_a_multiple_files_vendor.js"
-# 
-#           af.send(:retrieve_assets_from, manifest).should == required_assets
-#         end
-# 
-#         # TODO cosider whether this example is really necessary
-#         # it 'can depends on a complicated and nested vendor' do
-#         #   pending 'something else'
-#         #   required_assets = %w(vendor/javascripts/multiple_files/index.js vendor/javascripts/multiple_files/others.js lib/javascripts/with_a_multiple_files_vendor.js)
-#         #   manifest = "#{ FIXTURE_ROOT }/app/javascripts/main/lib_with_a_multiple_files_vendor.js"
-#         # 
-#         #   af.send(:retrieve_assets_from, manifest).should == required_assets
-#         # end
-#       end
-#     end
-#     
-#     it 'retrievement with end_of_parsing directive' do
-#       pending 'unimplemeted'
-#     end
-#   end
-#   
-#   it 'duplicated requiring' do
-#     pending 'to realize after most common functions of this plugin work'
-#   end
-#   
-#   describe '#action_assets' do
-#     context 'when retrieving assets' do
-#       let(:action_assets) { af.action_assets }
-#       it 'can retrieve required assets' do
-#         action_assets.should == action_test_assets
-#       end
-# 
-#       it 'require action manifest as the last element' do
-#         action_assets.last.should == 'app/javascripts/main/action_test.js'
-#       end
-#     end
-#     
-#     it 'should cache the assets after the first time of retrieval' do
-#       af.action_assets.object_id.should == af.action_assets.object_id
-#     end
-#   end
-#   
-#   describe '#controller_assets' do
-#     context 'when retrieving assets' do
-#       it 'will use application.js as default controller asset setup' do
-#         required_assets = %w(lib/javascripts/simple.js vendor/javascripts/simple.js app/javascripts/application.js)
-#         
-#         af.controller_assets.should == required_assets
-#       end
-#       
-#       it 'will use specific controller asset setup as there is one' do
-#         required_assets = %w(vendor/javascripts/to_be_required.js lib/javascripts/to_be_required.js app/javascripts/another_controller/another_controller.js)
-#         af = AssetsFinder.new(FIXTURE_ROOT, 'another_controller', '')
-#         
-#         af.controller_assets.should == required_assets
-#       end
-#     end
-#   end
-#   
-#   describe '#all_assets' do
-#     it 'retrieve controller assets before action assets' do
-#       af = AssetsFinder.new(FIXTURE_ROOT, 'main', 'all_assets')
-#       required_assets = %w(lib/javascripts/simple.js vendor/javascripts/simple.js app/javascripts/application.js app/javascripts/main/multiple_files_action/others.js app/javascripts/main/all_assets.js)
-#       
-#       af.all_assets.should == required_assets
-#     end
-#     
-#     it 'pluck all the repetitive assets' do
-#       af = AssetsFinder.new(FIXTURE_ROOT, 'main', 'all_assets_with_repetitive_requiring')
-#       required_assets = %w(lib/javascripts/simple.js vendor/javascripts/simple.js app/javascripts/application.js app/javascripts/main/all_assets_with_repetitive_requiring.js)
-#       
-#       af.all_assets.should == required_assets
-#     end
-#   end
-# end
+shared_examples "finder" do |dir, ext, tag|
+  describe "#retrieve" do
+    context "straight-forward requirements" do
+      it "using default application.#{ext}" do
+        result = finder.retrieve('controller1', 'action1')
+        expected = %W(
+          vendor/#{dir}/vendor1.#{ext}
+          lib/#{dir}/lib1.#{ext}
+          app/#{dir}/application.#{ext}
+          lib/#{dir}/lib2.#{ext}
+          app/#{dir}/controller1/action1.#{ext}
+        )
+
+        result.should == expected
+      end
+
+      it "using specific controller.#{ext}" do
+        result = finder.retrieve('controller2', 'action1')
+        expected = %W(
+          vendor/#{dir}/vendor1.#{ext}
+          app/#{dir}/controller2/controller2.#{ext}
+          lib/#{dir}/lib1.#{ext}
+          app/#{dir}/controller2/action1.#{ext}
+        )
+
+        result.should == expected
+      end
+
+      it "automatically requiring files in indexed requirements" do
+        result = finder.retrieve('controller1', 'action2')
+        expected = %W(
+          vendor/#{dir}/vendor1.#{ext}
+          lib/#{dir}/lib1.#{ext}
+          app/#{dir}/application.#{ext}
+          app/#{dir}/controller1/action2/others.#{ext}
+          app/#{dir}/controller1/action2/others2.#{ext}
+        )
+
+        result.should == expected
+      end
+
+      it "using index as manifest in indexed requirements" do
+        result = finder.retrieve('controller1', 'action3')
+        expected = %W(
+          vendor/#{dir}/vendor1.#{ext}
+          lib/#{dir}/lib1.#{ext}
+          app/#{dir}/application.#{ext}
+          vendor/#{dir}/vendor2.#{ext}
+          lib/#{dir}/lib2.#{ext}
+          app/#{dir}/controller1/action3/index.#{ext}
+          app/#{dir}/controller1/action3/others.#{ext}
+        )
+
+        result.should == expected
+      end
+
+      it "automatically requiring deeply-nested files in indexed requirements" do
+        result = finder.retrieve('controller1', 'action4')
+        expected = %W(
+          vendor/#{dir}/vendor1.#{ext}
+          lib/#{dir}/lib1.#{ext}
+          app/#{dir}/application.#{ext}
+          vendor/#{dir}/vendor2.#{ext}
+          lib/#{dir}/lib2.#{ext}
+          app/#{dir}/controller1/action4/asset/asset/file.#{ext}
+          app/#{dir}/controller1/action4/asset/file.#{ext}
+          app/#{dir}/controller1/action4/index.#{ext}
+          app/#{dir}/controller1/action4/others.#{ext}
+        )
+
+        result.should == expected
+      end
+    end
+
+    context "when requirements are complicating" do
+      it "retrieves nested dependences" do
+        result = finder.retrieve('controller1', 'action5')
+        expected = %W(
+          vendor/#{dir}/vendor1.#{ext}
+          lib/#{dir}/lib1.#{ext}
+          app/#{dir}/application.#{ext}
+          vendor/#{dir}/vendor3.#{ext}
+          vendor/#{dir}/vendor4.#{ext}
+          lib/#{dir}/lib4.#{ext}
+          lib/#{dir}/lib3.#{ext}
+          app/#{dir}/controller1/action5.#{ext}
+        )
+
+        result.should == expected
+      end
+
+      it "retrieves multiple-files libs and vendors" do
+        result = finder.retrieve('controller1', 'action6')
+        expected = %W(
+          vendor/#{dir}/vendor1.#{ext}
+          lib/#{dir}/lib1.#{ext}
+          app/#{dir}/application.#{ext}
+          lib/#{dir}/lib5/file1.#{ext}
+          lib/#{dir}/lib5/file2.#{ext}
+          vendor/#{dir}/vendor5/file1.#{ext}
+          vendor/#{dir}/vendor5/file2.#{ext}
+          app/#{dir}/controller1/action6/file1.#{ext}
+          app/#{dir}/controller1/action6/file2.#{ext}
+          app/#{dir}/controller1/action6/index.#{ext}
+        )
+
+        result.should == expected
+      end
+
+      it "retrieves indexed libs and vendors" do
+        result = finder.retrieve('controller1', 'action7')
+        expected = %W(
+          vendor/#{dir}/vendor1.#{ext}
+          lib/#{dir}/lib1.#{ext}
+          app/#{dir}/application.#{ext}
+          vendor/#{dir}/vendor5/file1.#{ext}
+          vendor/#{dir}/vendor5/file2.#{ext}
+          vendor/#{dir}/vendor6/file1.#{ext}
+          vendor/#{dir}/vendor6/file2.#{ext}
+          vendor/#{dir}/vendor6/index.#{ext}
+          lib/#{dir}/lib5/file1.#{ext}
+          lib/#{dir}/lib5/file2.#{ext}
+          lib/#{dir}/lib6/file1.#{ext}
+          lib/#{dir}/lib6/file2.#{ext}
+          lib/#{dir}/lib6/index.#{ext}
+          app/#{dir}/controller1/action7.#{ext}
+        )
+
+        result.should == expected
+      end
+
+      it "avoids end-less retrieving for closed-loop requirements" do
+        result = finder.retrieve('controller1', 'action8')
+        expected = %W(
+          vendor/#{dir}/vendor1.#{ext}
+          lib/#{dir}/lib1.#{ext}
+          app/#{dir}/application.#{ext}
+          lib/#{dir}/lib8.#{ext}
+          lib/#{dir}/lib7.#{ext}
+          app/#{dir}/controller1/action8.#{ext}
+        )
+
+        result.should == expected
+      end
+
+      it "supports multiple requiring directives" do
+        result = finder.retrieve('controller3', 'action1')
+        expected = %W(
+          vendor/#{dir}/vendor7.#{ext}
+          vendor/#{dir}/vendor8.#{ext}
+          lib/#{dir}/lib10.#{ext}
+          vendor/#{dir}/vendor10.#{ext}
+          app/#{dir}/controller3/controller3.#{ext}
+          vendor/#{dir}/vendor9.#{ext}
+          lib/#{dir}/lib9.#{ext}
+          lib/#{dir}/lib11.#{ext}
+          app/#{dir}/controller3/action1.#{ext}
+        )
+
+        result.should == expected
+      end
+
+      it "retrieves assets from another action" do
+        result = finder.retrieve('controller1', 'action9')
+        expected = %W(
+          vendor/#{dir}/vendor1.#{ext}
+          lib/#{dir}/lib1.#{ext}
+          app/#{dir}/application.#{ext}
+          app/#{dir}/controller1/action10/file1.#{ext}
+          app/#{dir}/controller1/action10/file2.#{ext}
+          app/#{dir}/controller1/action9.#{ext}
+        )
+
+        result.should == expected
+      end
+
+      it "retrieves assets fron another controller" do
+        result = finder.retrieve('controller1', 'action11')
+        expected = %W(
+          vendor/#{dir}/vendor1.#{ext}
+          lib/#{dir}/lib1.#{ext}
+          app/#{dir}/application.#{ext}
+          app/#{dir}//controller2/action2/file1.#{ext}
+          app/#{dir}//controller2/action2/file2.#{ext}
+          app/#{dir}/controller1/action11/index.#{ext}
+        )
+
+        result.should == expected
+      end
+    end
+
+    it "support :full options" do
+      result = finder.retrieve('controller1', 'action12', :full => true)
+      expected = %W(
+        /Users/bom_d_van/Code/ruby/view_assets/spec/finder/fixtures/vendor/#{dir}/vendor1.#{ext}
+        /Users/bom_d_van/Code/ruby/view_assets/spec/finder/fixtures/lib/#{dir}/lib1.#{ext}
+        /Users/bom_d_van/Code/ruby/view_assets/spec/finder/fixtures/app/#{dir}/application.#{ext}
+        /Users/bom_d_van/Code/ruby/view_assets/spec/finder/fixtures/vendor/#{dir}/vendor11.#{ext}
+        /Users/bom_d_van/Code/ruby/view_assets/spec/finder/fixtures/lib/#{dir}/lib12.#{ext}
+        /Users/bom_d_van/Code/ruby/view_assets/spec/finder/fixtures/app/#{dir}/controller1/action12.#{ext}
+      )
+
+      result.should == expected
+    end
+
+    it "support :tagged options" do
+      result = finder.retrieve('controller1', 'action12', :tagged => true)
+      expected = %W(
+        /vendor/#{dir}/vendor1.#{ext}
+        /lib/#{dir}/lib1.#{ext}
+        /app/#{dir}/application.#{ext}
+        /vendor/#{dir}/vendor11.#{ext}
+        /lib/#{dir}/lib12.#{ext}
+        /app/#{dir}/controller1/action12.#{ext}
+      ).map { |asset| tag.call(ext.to_sym, asset) }
+
+      result.should == expected
+    end
+
+    it "return tagged assets with rel path even :full options is true" do
+      result = finder.retrieve('controller1', 'action12', :tagged => true, :full => true)
+      expected = %W(
+        /vendor/#{dir}/vendor1.#{ext}
+        /lib/#{dir}/lib1.#{ext}
+        /app/#{dir}/application.#{ext}
+        /vendor/#{dir}/vendor11.#{ext}
+        /lib/#{dir}/lib12.#{ext}
+        /app/#{dir}/controller1/action12.#{ext}
+      ).map { |asset| tag.call(ext.to_sym, asset) }
+
+      result.should == expected
+    end
+
+    context "controller only retrieval" do
+      it "retrieve default application assets" do
+        result = finder.retrieve('controller1', '')
+        expected = %W(
+          vendor/#{dir}/vendor1.#{ext}
+          lib/#{dir}/lib1.#{ext}
+          app/#{dir}/application.#{ext}
+        )
+
+        result.should == expected
+      end
+
+      it "retrieve custom controller assets" do
+        result = finder.retrieve('controller3', '')
+        expected = %W(
+          vendor/#{dir}/vendor7.#{ext}
+          vendor/#{dir}/vendor8.#{ext}
+          lib/#{dir}/lib10.#{ext}
+          vendor/#{dir}/vendor10.#{ext}
+          app/#{dir}/controller3/controller3.#{ext}
+        )
+
+        result.should == expected
+      end
+    end
+  end
+end

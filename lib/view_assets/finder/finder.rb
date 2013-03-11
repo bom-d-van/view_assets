@@ -32,24 +32,24 @@ module ViewAssets
       #     :action => nil
       #     :full => false
       #     :tagged => false
-      # TODO: remove this quick fix used for adding a leading slash to make
-      def retrieve(controller, action, options = {})
+      # TODO: need to retrive action-less assets
+      def retrieve(controller = '', action = '', options = {})
+        # raise ":controller and :action can't be nil" if @controller.nil?
+
         options[:full]   ||= false
         options[:tagged] ||= false
 
         @assets           = []
         @parsed_manifests = []
-        @controller       = controller unless controller.nil?
-        @action           = action     unless action.nil?
-
-        raise ":controller and :action can't be nil" if @controller.nil? || @action.nil?
+        @controller       = controller
+        @action           = action
 
         retrieve_controller_assets
-        retrieve_action_assets
+        retrieve_action_assets if @action != ''
         @assets.uniq!
 
         @assets.map! { |asset| PathInfo.new(asset).abs } if options[:full]
-        @assets.map! { |asset| tag "/#{asset.rel}" }         if options[:tagged]
+        @assets.map! { |asset| tag("/#{asset.rel}") }    if options[:tagged]
 
         @assets
       end

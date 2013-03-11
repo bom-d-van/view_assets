@@ -16,8 +16,18 @@ module ViewAssets
   CSS_EXT = 'css'
   CSS_PATH = 'stylesheets'
 
-  # Load Tasks
-  # Dir.glob(File.dirname(__FILE__) + '/tasks/*.rake').each { |task| load(task) } if defined?(Rake)
+  def tag(type, url)
+    case type
+    when :js
+      %(<script src="#{url}" type="text/javascript"></script>)
+    when :css
+      %(<link href="#{url}" media="screen" rel="stylesheet" />)
+    else
+      raise Error.new("Unknown tag type")
+    end
+  end
+
+  module_function :tag
 
   require 'view_assets/error'
   require 'view_assets/path_info'

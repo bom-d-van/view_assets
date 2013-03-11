@@ -1,5 +1,6 @@
 module ViewAssets
-  class ConfigurationError < StandardError; end
-  class UnknownDirectiveError < StandardError; end
-  class FileNotFound < StandardError; end
+  class Error < StandardError; end
+  class ConfigurationError < Error; end
+  class UnknownDirectiveError < Error; end
+  class FileNotFound < Error; end
 end

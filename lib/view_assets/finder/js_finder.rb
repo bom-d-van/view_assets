@@ -5,17 +5,17 @@ module ViewAssets
         # 'assets/javascripts'
         JS_PATH
       end
-    
+
       def asset_extension
         JS_EXT
       end
-    
+
       def asset_type
         JS_TYPE
       end
-    
-      def tag(js_src)
-        %(<script src="#{js_src}" type="text/javascript"></script>)
+
+      def tag(src)
+        ViewAssets.tag(:js, src)
       end
     end
   end

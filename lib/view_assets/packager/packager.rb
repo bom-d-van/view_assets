@@ -13,39 +13,27 @@ module ViewAssets
         options = { :verbal => false, :compress => true, :manifest => true }.update(options)
         targets = actions_map.retrieve if targets.empty?
 
-        # preparing envs
+        # Preparing Envs
         FileUtils.mkdir_p("#{root}/assets/#{CSS_PATH}")
         FileUtils.mkdir_p("#{root}/assets/#{JS_PATH}")
 
-        # packaging
-        manifest = {}
+        # Packaging
+        @manifest = {}
+        # TODO: retrieve application-required assets
+        meta_package('', '', options)
+
         targets.each do |controller, actions|
+          # TODO: retrieve controller-dependent assets
+          meta_package(controller, '', options)
+
           actions.map do |action|
-            # retrieving asset sources
-            sources = finder.retrieve(controller, action)
-            if sources.empty?
-              puts "Asset: #{controller}.#{action} not existed" if options[:verbal]
-              next
-            elsif options[:verbal]
-              puts "Packaging: #{controller}.#{action}"
-            end
-
-            # package assets: concatenate | compress | fingerprint
-            content = concatenate(sources)
-            compressed_content = options[:compress] ? compress(content) : content
-            file_name = "#{controller}_#{action}-#{fingerprint(compressed_content)}.#{asset_ext}"
-
-            # save indices of packaged assets
-            manifest["/assets/#{asset_path}/#{controller}_#{action}.#{asset_ext}"] = "/assets/#{asset_path}/#{file_name}"
-
-            # save packaged assets
-            File.open("#{root}/assets/#{asset_path}/#{file_name}", 'w') { |file| file << compressed_content }
+            meta_package(controller, action, options)
           end
         end
 
-        File.open("#{root}/assets/#{asset_path}/manifest.yml", 'w') { |file| YAML.dump(manifest, file) } if options[:manifest]
+        File.open("#{root}/assets/#{asset_path}/manifest.yml", 'w') { |file| YAML.dump(@manifest, file) } if options[:manifest]
 
-        return manifest
+        @manifest
       end
 
       def root
@@ -53,6 +41,36 @@ module ViewAssets
       end
 
       private
+
+      def meta_package(controller, action, options)
+        # Retrieving Asset Sources
+        sources = finder.retrieve(controller, action)
+        if sources.empty?
+          puts "Asset: #{controller}.#{action} not existed" if options[:verbal]
+          return
+        elsif options[:verbal]
+          puts "Packaging: #{controller}.#{action}"
+        end
+
+        # Package Assets: Concatenate | Compress | Fingerprint
+        content = concatenate(sources)
+        compressed_content = options[:compress] ? compress(content) : content
+        ca_name = case
+                  when controller == '' && action == ''
+                    'application'
+                  when controller != '' && action == ''
+                    "#{controller}"
+                  when controller != '' && action != ''
+                    "#{controller}_#{action}"
+                  end
+        file_name = "#{ca_name}-#{fingerprint(compressed_content)}.#{asset_ext}"
+
+        # Save Indices of Packaged Assets
+        @manifest["/assets/#{asset_path}/#{ca_name}.#{asset_ext}"] = "/assets/#{asset_path}/#{file_name}"
+
+        # Save Packaged Assets
+        File.open("#{root}/assets/#{asset_path}/#{file_name}", 'w') { |file| file << compressed_content }
+      end
 
       def concatenate(sources)
         sources.inject("") do |content, source|

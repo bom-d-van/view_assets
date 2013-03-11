@@ -16,6 +16,8 @@ describe JsPackager do
       FileUtils.rm_r(Dir.glob("#{PACKAGER_TEST_ROOT}/assets/#{JS_PATH}/*"))
       JsPackager.new.package
       expected = %w(
+        application-d41d8cd98f00b204e9800998ecf8427e.js
+        controller1-d41d8cd98f00b204e9800998ecf8427e.js
         controller1_action1-d41d8cd98f00b204e9800998ecf8427e.js
         controller1_action10-d41d8cd98f00b204e9800998ecf8427e.js
         controller1_action11-d41d8cd98f00b204e9800998ecf8427e.js
@@ -28,8 +30,10 @@ describe JsPackager do
         controller1_action7-d41d8cd98f00b204e9800998ecf8427e.js
         controller1_action8-d41d8cd98f00b204e9800998ecf8427e.js
         controller1_action9-d41d8cd98f00b204e9800998ecf8427e.js
+        controller2-d41d8cd98f00b204e9800998ecf8427e.js
         controller2_action1-d41d8cd98f00b204e9800998ecf8427e.js
         controller2_action2-d41d8cd98f00b204e9800998ecf8427e.js
+        controller3-d41d8cd98f00b204e9800998ecf8427e.js
         controller3_action1-d41d8cd98f00b204e9800998ecf8427e.js
       ).map { |file| "#{PACKAGER_TEST_ROOT}/assets/#{JS_PATH}/#{file}" }
 
@@ -51,6 +55,8 @@ describe CssPackager do
 
       CssPackager.new.package
       expected = %w(
+        application-d41d8cd98f00b204e9800998ecf8427e.css
+        controller1-d41d8cd98f00b204e9800998ecf8427e.css
         controller1_action1-d41d8cd98f00b204e9800998ecf8427e.css
         controller1_action10-d41d8cd98f00b204e9800998ecf8427e.css
         controller1_action11-d41d8cd98f00b204e9800998ecf8427e.css
@@ -63,8 +69,10 @@ describe CssPackager do
         controller1_action7-d41d8cd98f00b204e9800998ecf8427e.css
         controller1_action8-d41d8cd98f00b204e9800998ecf8427e.css
         controller1_action9-d41d8cd98f00b204e9800998ecf8427e.css
+        controller2-d41d8cd98f00b204e9800998ecf8427e.css
         controller2_action1-d41d8cd98f00b204e9800998ecf8427e.css
         controller2_action2-d41d8cd98f00b204e9800998ecf8427e.css
+        controller3-d41d8cd98f00b204e9800998ecf8427e.css
         controller3_action1-d41d8cd98f00b204e9800998ecf8427e.css
       ).map { |file| "#{PACKAGER_TEST_ROOT}/assets/#{CSS_PATH}/#{file}" }
 

@@ -4,17 +4,17 @@ module ViewAssets
       def assets_path
         CSS_PATH
       end
-    
+
       def asset_extension
         CSS_EXT
       end
-    
+
       def asset_type
         CSS_TYPE
       end
-    
-      def tag(css_href)
-        "<link href='#{css_href}' media='screen' rel='stylesheet' />"
+
+      def tag(href)
+        ViewAssets.tag(:css, href)
       end
     end
   end
