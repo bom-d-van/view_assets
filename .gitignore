@@ -8,3 +8,4 @@ test/dummy/.sass-cache
 *.tmproj
 *.gem
 spec/packager/fixtures/packager/assets
+test/dummy/public/assets
