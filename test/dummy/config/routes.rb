@@ -1,4 +1,8 @@
 Dummy::Application.routes.draw do
+  get "cutting_records/index"
+
+  get "cutting_records/cutting_calculate"
+
   get "bar/index"
 
   get "bar/show"

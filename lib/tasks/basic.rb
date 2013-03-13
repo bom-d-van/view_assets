@@ -29,10 +29,10 @@ namespace :va do
     require 'term/ansicolor'
     include Term::ANSIColor
 
-    puts green(bold("packaging js assets"))
+    puts green(bold("Packaging Js Assets"))
     ViewAssets::Packager::JsPackager.new.package
 
-    puts green(bold("packaging css assets"))
+    puts green(bold("Packaging Css Assets"))
     ViewAssets::Packager::CssPackager.new.package
   end
 

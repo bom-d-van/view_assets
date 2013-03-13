@@ -1,3 +1,3 @@
 module ApplicationHelper
-  include ViewAssets
+  include ViewAssets::ActionViewHelpers
 end
