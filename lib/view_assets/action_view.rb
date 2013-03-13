@@ -31,7 +31,8 @@ module ViewAssets
         assets.concat ViewAssets::Finder::JsFinder.new.retrieve(controller, action, :tagged => true)
       end
 
-      assets.map { |asset| raw(asset) }
+      # assets.map { |asset| raw(asset) }
+      raw(assets.flatten.uniq.join("\n "))
     end
   end
 end

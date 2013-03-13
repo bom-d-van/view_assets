@@ -60,7 +60,6 @@ namespace :va do
     puts "-------"
 
     unless js_manifest.empty?
-      # puts green(bold("Validing Js Assets"))
       js_manifest.each_value do |asset|
         puts "#{green("Checking:")} #{asset}"
         `java -jar #{File.expand_path("../yuicompressor-2.4.4.jar", File.dirname(__FILE__))} #{Rails.public_path}#{asset}`
@@ -68,7 +67,6 @@ namespace :va do
     end
 
     unless css_manifest.empty?
-      # puts green(bold("Validing Css Assets"))
       css_manifest.each_value do |asset|
         puts "#{green("Checking:")} #{asset}"
         `java -jar #{File.expand_path("../yuicompressor-2.4.4.jar", File.dirname(__FILE__))} #{Rails.public_path}#{asset}`

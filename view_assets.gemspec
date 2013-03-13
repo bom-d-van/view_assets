@@ -17,10 +17,10 @@ Gem::Specification.new do |s|
   s.test_files = Dir["test/**/*"]
 
   s.add_dependency "rails", "~> 3.2.8"
+  s.add_dependency "yui-compressor"
+  s.add_dependency "term-ansicolor"
 
   s.add_development_dependency "sqlite3"
-  s.add_development_dependency "yui-compressor"
-  s.add_development_dependency "term-ansicolor"
 
   s.add_development_dependency "rspec"
   s.add_development_dependency "ZenTest", "4.8.3"

@@ -43,18 +43,6 @@ module ViewAssets
       private
 
       def meta_package(controller, action, options)
-        # Retrieving Asset Sources
-        sources = finder.retrieve(controller, action)
-        if sources.empty?
-          puts "Asset: #{controller}.#{action} not existed" if options[:verbal]
-          return
-        elsif options[:verbal]
-          puts "Packaging: #{controller}.#{action}"
-        end
-
-        # Package Assets: Concatenate | Compress | Fingerprint
-        content = concatenate(sources)
-        compressed_content = options[:compress] ? compress(content) : content
         ca_name = case
                   when controller == '' && action == ''
                     'application'
@@ -63,6 +51,19 @@ module ViewAssets
                   when controller != '' && action != ''
                     "#{controller}_#{action}"
                   end
+
+        # Retrieving Asset Sources
+        sources = finder.retrieve(controller, action)
+        if sources.empty?
+          puts "Asset: #{controller}.#{action} not existed" if options[:verbal]
+          return
+        elsif options[:verbal]
+          puts "Packaging: #{ca_name}"
+        end
+
+        # Package Assets: Concatenate | Compress | Fingerprint
+        content = concatenate(sources)
+        compressed_content = options[:compress] ? compress(content) : content
         file_name = "#{ca_name}-#{fingerprint(compressed_content)}.#{asset_ext}"
 
         # Save Indices of Packaged Assets
