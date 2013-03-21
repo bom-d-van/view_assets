@@ -59,6 +59,7 @@ module ViewAssets
       ##
       # Check out whether all assets is existed or not
       # It is better to be turned off in production
+      # TODO: add Rspec Examples
       def verify
         all_assets.each do |asset|
           raise AssetNotFound.new("File #{asset} DOEST EXIST") unless FileTest.exist?(asset.abs)
