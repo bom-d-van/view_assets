@@ -1,6 +1,8 @@
 module ViewAssets
   module Packager
     require 'yui/compressor'
+    require 'closure-compiler'
+    require 'uglifier'
     require 'openssl'
     require 'pathname'
     require 'yaml'
@@ -9,8 +11,11 @@ module ViewAssets
       # targets = { :controller => [:action1, :action2], ... }
       # options:
       #   :verbal => false
+      #   :compress => true
+      #   :compress_engine => 'yui-compressor'
+      #   :manifest => true
       def package(targets = {}, options = {})
-        options = { :verbal => false, :compress => true, :manifest => true }.update(options)
+        options = { :verbal => false, :compress => true, :manifest => true, :compress_engine => 'yui-compressor' }.update(options)
         targets = actions_map.retrieve if targets.empty?
 
         # Preparing Envs
@@ -63,7 +68,7 @@ module ViewAssets
 
         # Package Assets: Concatenate | Compress | Fingerprint
         content = concatenate(sources)
-        compressed_content = options[:compress] ? compress(content) : content
+        compressed_content = options[:compress] ? compress(options[:compress_engine], content) : content
         file_name = "#{ca_name}-#{fingerprint(compressed_content)}.#{asset_ext}"
 
         # Save Indices of Packaged Assets
@@ -80,8 +85,8 @@ module ViewAssets
         end
       end
 
-      def compress(content)
-        compressor.compress(content)
+      def compress(engine_id, content)
+        compressor.compress(engine_id, content)
       end
 
       Digestor = OpenSSL::Digest::MD5.new
@@ -90,12 +95,28 @@ module ViewAssets
       end
     end
 
+    class Compressor
+      def initialize
+        @engines = {} # { :engine_id => engine }
+      end
+
+      def register(engine_id, engine)
+        @engines[engine_id] = engine
+      end
+
+      def compress(engine_id, content)
+        raise Error.new("Compress Engine #{engine_id} Is Not Supported") if @engines[engine_id].nil?
+
+        @engines[engine_id].compress(content)
+      end
+    end
+
     class JsPackager < Packager
       def actions_map
         JsActionsMap.new
       end
 
-      FINDER =  ViewAssets::Finder::JsFinder.new
+      FINDER = ViewAssets::Finder::JsFinder.new
       def finder
         FINDER
       end
@@ -104,7 +125,11 @@ module ViewAssets
         JS_EXT
       end
 
-      COMPRESSOR = YUI::JavaScriptCompressor.new(:munge => true)
+      # COMPRESSOR = YUI::JavaScriptCompressor.new(:munge => true)
+      COMPRESSOR = Compressor.new
+      COMPRESSOR.register("yui-compressor", YUI::JavaScriptCompressor.new(:munge => true))
+      COMPRESSOR.register("google-closure", Closure::Compiler.new)
+      COMPRESSOR.register("uglifier", Uglifier.new(:mangle => false))
       def compressor
         COMPRESSOR
       end
@@ -128,7 +153,9 @@ module ViewAssets
         CSS_EXT
       end
 
-      COMPRESSOR = YUI::CssCompressor.new
+      # COMPRESSOR = YUI::CssCompressor.new
+      COMPRESSOR = Compressor.new
+      COMPRESSOR.register("yui-compressor", YUI::CssCompressor.new)
       def compressor
         COMPRESSOR
       end

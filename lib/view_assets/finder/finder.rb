@@ -174,6 +174,7 @@ module ViewAssets
       # todo BUG => can't retrieve assets with slash-asterisk(/*= xxx */) directive.
       # todo add specs for testing required folders without index
       def meta_retrieve(manifest_path, manifest)
+        # TODO: to support manifest with file extension
         single_file_lib = PathInfo.new("#{manifest_path}/#{manifest}.#{asset_extension}")
 
         manifest_dir               = "#{manifest_path}/#{manifest}"

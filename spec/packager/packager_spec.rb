@@ -39,6 +39,33 @@ describe JsPackager do
 
       Dir["#{PACKAGER_TEST_ROOT}/assets/#{JS_PATH}/*.js"].should == expected
     end
+
+    context "using other compressor" do
+      let(:jspr) { JsPackager.new }
+      it "support closure-compressor" do
+        jspr.should_receive(:compress).with('google-closure', kind_of(String)).any_number_of_times.and_return("")
+
+        jspr.package({}, { :compress_engine => 'google-closure' })
+      end
+
+      it "support uglifier" do
+        jspr.should_receive(:compress).with('uglifier', kind_of(String)).any_number_of_times.and_return("")
+
+        jspr.package({}, { :compress_engine => 'uglifier' })
+      end
+
+      it "support custom compiler" do
+        mycompiler = double('my compiler')
+        mycompiler.stub(:compress).and_return('')
+        jspr.compressor.register('my-compiler', mycompiler)
+
+        jspr.should_receive(:compress).with('my-compiler', kind_of(String)).any_number_of_times.and_return('')
+
+        jspr.package({}, { :compress_engine  => 'my-compiler' })
+      end
+
+      it { expect { jspr.package({}, { :compress_engine => 'non-exist compiler' }) }.to raise_error(Error) }
+    end
   end
 end
 
@@ -77,6 +104,22 @@ describe CssPackager do
       ).map { |file| "#{PACKAGER_TEST_ROOT}/assets/#{CSS_PATH}/#{file}" }
 
       Dir["#{PACKAGER_TEST_ROOT}/assets/#{CSS_PATH}/*.css"].should == expected
+    end
+
+    context "using other compressor" do
+      let(:csspr) { CssPackager.new }
+
+      it "support custom compiler" do
+        mycompiler = double('my compiler')
+        mycompiler.stub(:compress).and_return('')
+        csspr.compressor.register('my-compiler', mycompiler)
+
+        csspr.should_receive(:compress).with('my-compiler', kind_of(String)).any_number_of_times.and_return('')
+
+        csspr.package({}, { :compress_engine  => 'my-compiler' })
+      end
+
+      it { expect { csspr.package({}, { :compress_engine => 'non-exist compiler' }) }.to raise_error(Error) }
     end
   end
 end

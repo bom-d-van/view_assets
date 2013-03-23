@@ -18,6 +18,8 @@ Gem::Specification.new do |s|
 
   s.add_dependency "rails", "~> 3.2.8"
   s.add_dependency "yui-compressor"
+  s.add_dependency "uglifier"
+  s.add_dependency "closure-compiler"
   s.add_dependency "term-ansicolor"
 
   s.add_development_dependency "sqlite3"
