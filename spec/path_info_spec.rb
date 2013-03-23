@@ -47,6 +47,13 @@ describe PathInfo do
     end
   end
 
+  describe ".with_ext?" do
+    context "recognize normal extension" do
+      it { PathInfo.new("something/has/file.js").with_ext?.should == true }
+      it { PathInfo.new("something/has/file").with_ext?.should == false }
+    end
+  end
+
   describe "category" do
     it "belongs to lib category" do
       PathInfo.new("lib/javascripts/something.js").lib? == true

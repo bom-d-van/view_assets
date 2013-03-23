@@ -12,33 +12,36 @@ module ViewAssets
       end
 
       def retrieve_manifests
-        assets = { :vendor => [], :lib => [], :app => [] }
+        manifests = { :vendor => [], :lib => [], :app => [] }
+
         # vendor
-        asests[:vendor] = retrieve_indexing_manifest("#{root}/#{VENDOR_FOLDER}/#{asset_path}")
-
+        manifests[:vendor] = retrieve_indexing_manifests("#{root}/#{VENDOR_FOLDER}/#{asset_path}")
         # lib
-        assets[:lib] = retrieve_indexing_manifest("#{root}/#{LIB_FOLDER}/#{asset_path}")
-
+        manifests[:lib] = retrieve_indexing_manifests("#{root}/#{LIB_FOLDER}/#{asset_path}")
         # application.ext
-        assets[:app] = "#{root}/#{APP_FOLDER}/#{asset_path}/application.#{ext}"
-
+        manifests[:app].push(PathInfo.new("#{root}/#{APP_FOLDER}/#{asset_path}/application.#{ext}"))
         # :controller/:action
         action_manifests = []
         Pathname.new("#{root}/#{APP_FOLDER}/#{asset_path}").children.each { |controller|
           if controller.directory?
-            action_manifests.concat retrieve_indexing_manifests(controller)
+            action_manifests.concat(retrieve_indexing_manifests(controller))
           end
         }
+        manifests[:app].concat(action_manifests)
 
-        assets[:app].concat(action_manifests)
+        manifests.each do |type, manifest_col|
+          manifests[type] = manifest_col.map do |manifest|
+            manifest.with_ext? ? manifest.chomp(File.extname(manifest)) : manifest
+          end
+        end
       end
 
       def retrieve_indexing_manifests(path)
-        Pathname.new(path).children.each_with_object([]) do |manifests, entry|
+        Pathname.new(path).children.each_with_object([]) do |entry, manifests|
           if entry.file?
             manifests.push(PathInfo.new(entry.to_s))
           elsif entry.children.include?(entry.join("index.#{ext}"))
-            manifest.push(PathInfo.new(entry.join("index.#{ext}")))
+            manifests.push(PathInfo.new(entry.join("index.#{ext}").to_s))
           end
         end
       end
