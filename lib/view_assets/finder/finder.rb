@@ -60,21 +60,11 @@ module ViewAssets
 
         @assets            = []
         @parsed_manifests  = []
+        @controller        = options[:controller]
+        @action            = options[:action]
         @shallow_retrieval = options[:shallow]
 
         @assets = meta_retrieve(root, manifest)
-
-        puts manifest
-        puts @shallow_retrieval
-        puts @assets.to_s
-
-        # real_manifest = "#{root}/#{manifest}.#{asset_extension}"
-        # real_manifest = "#{root}/#{manifest}/index.#{asset_extension}" if @assets.length > 1
-        # required_assets = retrieve_assets_from(real_manifest)
-        # required_assets.map! { |asset| asset.basename } if options[:non_ext]
-        #
-        # @assets = required_assets.concat(@assets)
-
         @assets.uniq!
 
         @assets.map! { |asset| PathInfo.new(asset).abs } if options[:full]
@@ -183,7 +173,7 @@ module ViewAssets
       def retrieve_app_asset(required_asset)
         required_asset = PathInfo.new(required_asset)
 
-        dir   = "#{app_path}/#{required_asset.match(/^\//) ? '' : "#{@controller}/"}"
+        dir   = "#{app_path}#{required_asset.match(/^\//) ? '' : "/#{@controller}/"}"
         asset = "#{required_asset}#{required_asset.with_ext? ? '' : ".#{asset_extension}"}"
         PathInfo.new(dir + asset).rel
       end

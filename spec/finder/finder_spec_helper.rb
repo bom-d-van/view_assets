@@ -7,6 +7,10 @@ include ViewAssets
 include ViewAssets::Finder
 
 shared_examples "finder" do |dir, ext, tag|
+  describe "#retrieve_app_asset" do
+    pending
+  end
+
   describe "#retrieve" do
     context "straight-forward requirements" do
       it "using default application.#{ext}" do
@@ -182,14 +186,14 @@ shared_examples "finder" do |dir, ext, tag|
         result.should == expected
       end
 
-      it "retrieves assets fron another controller" do
+      it "retrieves assets from another controller" do
         result = finder.retrieve('controller1', 'action11')
         expected = %W(
           vendor/#{dir}/vendor1.#{ext}
           lib/#{dir}/lib1.#{ext}
           app/#{dir}/application.#{ext}
-          app/#{dir}//controller2/action2/file1.#{ext}
-          app/#{dir}//controller2/action2/file2.#{ext}
+          app/#{dir}/controller2/action2/file1.#{ext}
+          app/#{dir}/controller2/action2/file2.#{ext}
           app/#{dir}/controller1/action11/index.#{ext}
         )
 
@@ -326,7 +330,7 @@ shared_examples "finder" do |dir, ext, tag|
       it "retrieve with shallow option" do
         result = finder.retrieve_manifest("vendor/#{dir}/vendor12", { :shallow => true })
         expected = %W(
-          vendor/#{dir}/vendor13.#{ext}
+          vendor/#{dir}/vendor13
           vendor/#{dir}/vendor12.#{ext}
         )
 

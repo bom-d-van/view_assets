@@ -3,6 +3,7 @@ module ViewAssets
     require "view_assets"
     require "view_assets/finder/core"
     require "view_assets/packager/actions_map"
+    require 'yaml'
 
     class Map
       def draw
@@ -14,7 +15,7 @@ module ViewAssets
         app_covered_action = false
         if FileTest.exist?("#{application_manifest.abs}.#{ext}")
           map[:app][application_manifest.to_s] = finder.retrieve_manifest(application_manifest, { :shallow => true })
-          covered_action = true
+          app_covered_action = true
         end
 
         # Controllers and Actions
@@ -23,13 +24,14 @@ module ViewAssets
           controller_manifest = PathInfo.new("#{app_path}/#{asset_path}/#{controller}/#{controller}")
           controller_convered_action = false
           if FileTest.exist?("#{controller_manifest.abs}.#{ext}")
-            map[:app][controller_manifest.to_s] = finder.retrieve_manifest(controller_manifest, { :shallow => true })
+            map[:app][controller_manifest.to_s] = finder.retrieve_manifest(controller_manifest, { :shallow => true, :controller => controller })
+
             controller_convered_action = true
           end
 
           actions.each do |action|
             action_manifest = "#{app_path}/#{asset_path}/#{controller}/#{action}"
-            map[:app][action_manifest] = finder.retrieve(controller, action, { :shallow => true })
+            map[:app][action_manifest] = finder.retrieve(controller, action, { :shallow => true, :controller => controller, :action => action })
 
             if controller_convered_action || app_covered_action
               map[:app][action_manifest][0] = map[:app][action_manifest][0].basename
@@ -50,6 +52,9 @@ module ViewAssets
 
           map[:lib][manifest.basename] = finder.retrieve_manifest(manifest.rel, { :shallow => true })
         end
+
+        FileUtils.mkdir_p("#{root}/assets")
+        File.open("#{root}/assets/#{asset_path}_asset.yml", 'w') { |file| file << YAML.dump(map) }
 
         map
       end
@@ -132,6 +137,14 @@ module ViewAssets
 
       def asset_path
         CSS_PATH
+      end
+
+      def action_map
+        ::ViewAssets::Packager::CssActionsMap.new
+      end
+
+      def finder
+        ::ViewAssets::Finder::CssFinder.new
       end
     end
   end

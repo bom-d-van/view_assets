@@ -3,85 +3,56 @@ require "view_assets/manager/map"
 
 include ViewAssets::Manager
 
-describe JsMap do
-  let(:map) { JsMap.new }
-  before(:each) do
-    Rails.stub(:public_path).and_return("#{File.expand_path("fixtures/map", File.dirname(__FILE__))}")
-  end
-
-  # describe "#retrieve_manifests" do
-  #   it "return manifests map" do
-  #     expected_manifests = {
-  #       :vendor => [
-  #         PathInfo.new("vendor/javascripts/vendor1").abs,
-  #         PathInfo.new("vendor/javascripts/vendor2/index").abs
-  #       ],
-  #       :lib => [
-  #         PathInfo.new("lib/javascripts/lib1").abs,
-  #         PathInfo.new("lib/javascripts/lib2/index").abs,
-  #         PathInfo.new("lib/javascripts/lib4").abs
-  #       ],
-  #       :app => [
-  #         PathInfo.new("app/javascripts/application").abs,
-  #
-  #         PathInfo.new("app/javascripts/controller1/action1").abs,
-  #         PathInfo.new("app/javascripts/controller1/action2/index").abs,
-  #
-  #         PathInfo.new("app/javascripts/controller2/action1").abs,
-  #         PathInfo.new("app/javascripts/controller2/action2/index").abs,
-  #         PathInfo.new("app/javascripts/controller2/controller2").abs
-  #       ]
-  #     }
-  #
-  #     map.retrieve_manifests.should == expected_manifests
-  #   end
-  # end
-
+shared_examples "manager map" do |dir, ext|
   describe "#draw" do
     it "generate a hash map" do
       expected = {
         :vendor => {
-          'vendor/javascripts/vendor1' => ['vendor/javascripts/vendor1.js'],
-          'vendor/javascripts/vendor2' => ['vendor/javascripts/vendor2/index.js'],
-          'vendor/javascripts/vendor3' => ['vendor/javascripts/vendor3/test.js']
+          "vendor/#{dir}/vendor1" => ["vendor/#{dir}/vendor1.#{ext}"],
+          "vendor/#{dir}/vendor2" => ["vendor/#{dir}/vendor2/index.#{ext}"],
+          "vendor/#{dir}/vendor3" => ["vendor/#{dir}/vendor3/test.#{ext}"]
         },
         :lib => {
-          'lib/javascripts/lib1' => ['lib/javascripts/lib1.js'],
-          'lib/javascripts/lib2' => ['lib/javascripts/lib2/index.js'],
-          'lib/javascripts/lib3' => ['lib/javascripts/lib3/test.js'],
-          'lib/javascripts/lib4' => [
-            'lib/javascripts/lib1',
-            'lib/javascripts/lib4.js'
+          "lib/#{dir}/lib1" => ["lib/#{dir}/lib1.#{ext}"],
+          "lib/#{dir}/lib2" => ["lib/#{dir}/lib2/index.#{ext}"],
+          "lib/#{dir}/lib3" => ["lib/#{dir}/lib3/test.#{ext}"],
+          "lib/#{dir}/lib4" => [
+            "lib/#{dir}/lib1",
+            "lib/#{dir}/lib4.#{ext}"
           ],
         },
         :app => {
-          'app/javascripts/application' => ['app/javascripts/application.js'],
-          'app/javascripts/controller1/action1' => [
-            'app/javascripts/application.js',
-            'app/javascripts/controller1/action1.js'
+          "app/#{dir}/application" => ["app/#{dir}/application.#{ext}"],
+          "app/#{dir}/controller1/action1" => [
+            "app/#{dir}/application",
+            "vendor/#{dir}/vendor1",
+            "lib/#{dir}/lib4",
+            "app/#{dir}/controller1/action3/test.#{ext}",
+            "app/#{dir}/controller2/action3/test.#{ext}",
+            "app/#{dir}/controller1/action1.#{ext}"
           ],
-          'app/javascripts/controller1/action2' => [
-            'app/javascripts/application.js',
-            'app/javascripts/controller1/action2/index.js'
+          "app/#{dir}/controller1/action2" => [
+            "app/#{dir}/application",
+            "app/#{dir}/controller1/action2/index.#{ext}"
           ],
-          'app/javascripts/controller1/action3' => [
-            'app/javascripts/application.js',
-            'app/javascripts/controller1/action3/test.js'
+          "app/#{dir}/controller1/action3" => [
+            "app/#{dir}/application",
+            "app/#{dir}/controller1/action3/test.#{ext}"
           ],
-          'app/javascripts/controller2/controller2' => [
-            'app/javascripts/controller2/controller2.js'
+          "app/#{dir}/controller2/controller2" => [
+            "app/#{dir}/controller2/controller2.#{ext}"
           ],
-          'app/javascripts/controller2/action1' => [
-            'app/javascripts/controller2/controller2',
-            'app/javascripts/controller2/action1.js'
+          "app/#{dir}/controller2/action1" => [
+            "app/#{dir}/controller2/controller2",
+            "app/#{dir}/controller2/action1.#{ext}"
           ],
-          'app/javascripts/controller2/action2' => [
-            'app/javascripts/controller2/controller2',
-            'app/javascripts/controller2/action2/index.js'
+          "app/#{dir}/controller2/action2" => [
+            "app/#{dir}/controller2/controller2",
+            "app/#{dir}/controller2/action2/index.#{ext}"
           ],
-          'app/javascripts/controller2/action3' => [
-            'app/javascripts/controller2/controller2',
-            'app/javascripts/controller2/action3/test.js'
+          "app/#{dir}/controller2/action3" => [
+            "app/#{dir}/controller2/controller2",
+            "app/#{dir}/controller2/action3/test.#{ext}"
           ]
         }
       }
@@ -89,4 +60,20 @@ describe JsMap do
       map.draw.should == expected
     end
   end
+end
+
+describe JsMap do
+  let(:map) { JsMap.new }
+  before(:each) do
+    Rails.stub(:public_path).and_return("#{File.expand_path("fixtures/map", File.dirname(__FILE__))}")
+  end
+  include_examples "manager map", JS_PATH, JS_EXT
+end
+
+describe CssMap do
+  let(:map) { CssMap.new }
+  before(:each) do
+    Rails.stub(:public_path).and_return("#{File.expand_path("fixtures/map", File.dirname(__FILE__))}")
+  end
+  include_examples "manager map", CSS_PATH, CSS_EXT
 end
