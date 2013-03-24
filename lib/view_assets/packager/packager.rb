@@ -24,11 +24,9 @@ module ViewAssets
 
         # Packaging
         @manifest = {}
-        # TODO: retrieve application-required assets
         meta_package('', '', options)
 
         targets.each do |controller, actions|
-          # TODO: retrieve controller-dependent assets
           meta_package(controller, '', options)
 
           actions.map do |action|

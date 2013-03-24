@@ -1,0 +1,6 @@
+/**
+ *= require_vendor vendor5/file1.css
+ *= require_lib lib5/file1.css
+ *= require_lib lib13.css
+ *= require action2/others.css
+*/

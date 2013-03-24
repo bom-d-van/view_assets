@@ -32,20 +32,49 @@ module ViewAssets
       #     :action => nil
       #     :full => false
       #     :tagged => false
+      #     :tagged => false
+      #     :shallow => false
       # TODO: need to retrive action-less assets
       def retrieve(controller = '', action = '', options = {})
-        # raise ":controller and :action can't be nil" if @controller.nil?
+        options = { :full => false, :tagged => false, :shallow => false }.update(options)
 
-        options[:full]   ||= false
-        options[:tagged] ||= false
-
-        @assets           = []
-        @parsed_manifests = []
-        @controller       = controller
-        @action           = action
+        @assets            = []
+        @parsed_manifests  = []
+        @controller        = controller
+        @action            = action
+        @shallow_retrieval = options[:shallow]
 
         retrieve_controller_assets
         retrieve_action_assets if @action != ''
+        @assets.uniq!
+
+        @assets.map! { |asset| PathInfo.new(asset).abs } if options[:full]
+        @assets.map! { |asset| tag("/#{asset.rel}") }    if options[:tagged]
+
+        @assets
+      end
+
+      # manifest path should be a relative path
+      def retrieve_manifest(manifest, options = {})
+        options = { :full => false, :tagged => false, :shallow => false, :non_ext => true }.update(options)
+
+        @assets            = []
+        @parsed_manifests  = []
+        @shallow_retrieval = options[:shallow]
+
+        @assets = meta_retrieve(root, manifest)
+
+        puts manifest
+        puts @shallow_retrieval
+        puts @assets.to_s
+
+        # real_manifest = "#{root}/#{manifest}.#{asset_extension}"
+        # real_manifest = "#{root}/#{manifest}/index.#{asset_extension}" if @assets.length > 1
+        # required_assets = retrieve_assets_from(real_manifest)
+        # required_assets.map! { |asset| asset.basename } if options[:non_ext]
+        #
+        # @assets = required_assets.concat(@assets)
+
         @assets.uniq!
 
         @assets.map! { |asset| PathInfo.new(asset).abs } if options[:full]
@@ -60,6 +89,7 @@ module ViewAssets
       # Check out whether all assets is existed or not
       # It is better to be turned off in production
       # TODO: add Rspec Examples
+      # TODO: apply verify function
       def verify
         all_assets.each do |asset|
           raise AssetNotFound.new("File #{asset} DOEST EXIST") unless FileTest.exist?(asset.abs)
@@ -82,7 +112,10 @@ module ViewAssets
         manifest = controller_manifest  if FileTest.exist?(controller_manifest)
 
         # TODO add rspec example
-        return assets if manifest.nil?
+        return @assets if manifest.nil?
+
+        # TODO: test when application is not exist
+        return @assets.push(manifest.rel) if @shallow_retrieval
 
         @assets.concat(retrieve_assets_from(manifest) << manifest.rel)
       end
@@ -115,9 +148,9 @@ module ViewAssets
         end
       end
 
-      # start point of parsing dependent assets
+      # Start Point of Parsing Dependent Assets
       def retrieve_assets_from(manifest)
-        # TODO rspec examples for non-existed files
+        # TODO: Rspec Examples for non-Existed Files
         return [] if @parsed_manifests.include?(manifest) || !FileTest.exist?(manifest)
         @parsed_manifests.push(manifest)
 
@@ -156,14 +189,18 @@ module ViewAssets
       end
 
       def retrieve_vendor_assets(manifest)
+        return PathInfo.new("#{vendor_path}/#{manifest}").rel if @shallow_retrieval
+
         meta_retrieve(vendor_path, manifest)
       end
 
       def retrieve_lib_assets(manifest)
+        return PathInfo.new("#{lib_path}/#{manifest}").rel if @shallow_retrieval
+
         meta_retrieve(lib_path, manifest)
       end
 
-      # for lib and vendor assets, finder will assume that it was stored in the
+      # For lib and vendor assets, finder will assume that it was stored in the
       # root of vendor|lib and the file itself is a manifest file at first. If
       # that isn't the case, finder will try to locate it in
       # vendor|lib/:lib_or_vendor_name and take index.js inside that folder as
@@ -175,7 +212,7 @@ module ViewAssets
       # todo add specs for testing required folders without index
       def meta_retrieve(manifest_path, manifest)
         # TODO: to support manifest with file extension
-        single_file_lib = PathInfo.new("#{manifest_path}/#{manifest}.#{asset_extension}")
+        single_file_lib = PathInfo.new("#{manifest_path}/#{manifest}#{PathInfo.new(manifest).with_ext? ? '' : ".#{asset_extension}"}")
 
         manifest_dir               = "#{manifest_path}/#{manifest}"
         indexing_lib               = PathInfo.new("#{manifest_dir}/index.#{asset_extension}")
@@ -192,6 +229,8 @@ module ViewAssets
 
           all_assets_in_manifest_dir = Dir["#{manifest_dir}/**/*.#{asset_extension}"].map { |file| PathInfo.new(file).rel }
         end
+
+        # return all_assets_in_manifest_dir if @shallow_retrieval
 
         # TODO add specs for dependent assets sequence
         retrieve_assets_from(real_manifest).flatten

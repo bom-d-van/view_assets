@@ -33,6 +33,10 @@ module ViewAssets
       !!match(/\.(#{JS_EXT}|#{CSS_EXT})$/)
     end
 
+    def basename
+      PathInfo.new(with_ext? ? chomp(File.extname(self)) : self)
+    end
+
     # alter path string
     #   '/path/to/app/:dir/assets/:asset_type/file.js'
     #  =>

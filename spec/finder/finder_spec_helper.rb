@@ -264,5 +264,74 @@ shared_examples "finder" do |dir, ext, tag|
         result.should == expected
       end
     end
+
+    context "when directive params containing file extension" do
+      it "retrieve assets" do
+        result = finder.retrieve('controller1', 'action13')
+        expected = %W(
+          vendor/#{dir}/vendor1.#{ext}
+          lib/#{dir}/lib1.#{ext}
+          app/#{dir}/application.#{ext}
+          vendor/#{dir}/vendor5/file1.#{ext}
+          lib/#{dir}/lib5/file1.#{ext}
+          lib/#{dir}/lib12.#{ext}
+          lib/#{dir}/lib13.#{ext}
+          app/#{dir}/controller1/action2/others.#{ext}
+          app/#{dir}/controller1/action13.#{ext}
+        )
+
+        result.should == expected
+      end
+    end
+
+    context "when shallow option is true" do
+      it "retrieve assets" do
+        result = finder.retrieve('controller1', 'action13', { :shallow => true })
+        expected = %W(
+          app/#{dir}/application.#{ext}
+          vendor/#{dir}/vendor5/file1.#{ext}
+          lib/#{dir}/lib5/file1.#{ext}
+          lib/#{dir}/lib13.#{ext}
+          app/#{dir}/controller1/action2/others.#{ext}
+          app/#{dir}/controller1/action13.#{ext}
+        )
+
+        result.should == expected
+      end
+    end
+  end
+
+  describe "#retrieve_manifest" do
+    it "retrieve assets without requirements" do
+      result = finder.retrieve_manifest("vendor/#{dir}/vendor11")
+      expected = %W(
+        vendor/#{dir}/vendor11.#{ext}
+      )
+
+      result.should == expected
+    end
+
+    context "retrieve assets with requirements" do
+      it "retrieve assets without shallow option" do
+        result = finder.retrieve_manifest("vendor/#{dir}/vendor12")
+        expected = %W(
+          vendor/#{dir}/vendor11.#{ext}
+          vendor/#{dir}/vendor13.#{ext}
+          vendor/#{dir}/vendor12.#{ext}
+        )
+
+        result.should == expected
+      end
+
+      it "retrieve with shallow option" do
+        result = finder.retrieve_manifest("vendor/#{dir}/vendor12", { :shallow => true })
+        expected = %W(
+          vendor/#{dir}/vendor13.#{ext}
+          vendor/#{dir}/vendor12.#{ext}
+        )
+
+        result.should == expected
+      end
+    end
   end
 end

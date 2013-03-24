@@ -28,10 +28,6 @@ module ViewAssets
       def asset_path
         JS_PATH
       end
-
-      def method_name
-
-      end
     end
 
     class CssActionsMap < ActionsMap
