@@ -1,10 +1,5 @@
 module ViewAssets
   module Manager
-    require "view_assets"
-    require "view_assets/finder/core"
-    require "view_assets/packager/actions_map"
-    require 'yaml'
-
     class Map
       def draw
         map = { :vendor => {}, :lib => {}, :app => {} }
@@ -54,47 +49,11 @@ module ViewAssets
         end
 
         FileUtils.mkdir_p("#{root}/assets")
-        File.open("#{root}/assets/#{asset_path}_asset.yml", 'w') { |file| file << YAML.dump(map) }
+        File.open("#{root}/assets/#{asset_path}_assets.yml", 'w') { |file| file << YAML.dump(map) }
 
         map
       end
 
-      # def retrieve_manifests
-      #   manifests = { :vendor => [], :lib => [], :app => [] }
-      #
-      #   # Vendor Assets
-      #   manifests[:vendor] = retrieve_indexing_manifests("#{root}/#{vendor_path}/#{asset_path}")
-      #   # lib Assets
-      #   manifests[:lib] = retrieve_indexing_manifests("#{root}/#{lib_path}/#{asset_path}")
-      #   # Application Asset
-      #   manifests[:app].push(PathInfo.new("#{root}/#{app_path}/#{asset_path}/application.#{ext}"))
-      #   # :controller/:action
-      #   action_manifests = []
-      #   Pathname.new("#{root}/#{app_path}/#{asset_path}").children.each { |controller|
-      #     if controller.directory?
-      #       action_manifests.concat(retrieve_indexing_manifests(controller))
-      #     end
-      #   }
-      #   manifests[:app].concat(action_manifests)
-      #
-      #   # Remove Filename Extensions
-      #   manifests.each do |type, manifest_col|
-      #     manifests[type] = manifest_col.map do |manifest|
-      #       manifest.with_ext? ? manifest.chomp(File.extname(manifest)) : manifest
-      #     end
-      #   end
-      # end
-      #
-      # def retrieve_indexing_manifests(path)
-      #   Pathname.new(path).children.each_with_object([]) do |entry, manifests|
-      #     if entry.file?
-      #       manifests.push(PathInfo.new(entry.to_s))
-      #     elsif entry.children.include?(entry.join("index.#{ext}"))
-      #       manifests.push(PathInfo.new(entry.join("index.#{ext}").to_s))
-      #     end
-      #   end
-      # end
-      #
       def root
         Rails.public_path
       end

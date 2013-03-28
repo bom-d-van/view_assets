@@ -211,7 +211,7 @@ module ViewAssets
         real_manifest = nil
         if FileTest.exist?(single_file_lib)
           real_manifest = single_file_lib
-          # TODO refactor => add for a hotfix loading required folders without index
+          # TODO: refactor => add for a hotfix loading required folders without index
 
           all_assets_in_manifest_dir = [real_manifest.rel]
         else FileTest.exist?(indexing_lib)

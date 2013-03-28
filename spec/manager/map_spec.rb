@@ -1,5 +1,5 @@
 require File.expand_path("../rspec_helper", File.dirname(__FILE__))
-require "view_assets/manager/map"
+require "view_assets/manager/manager"
 
 include ViewAssets::Manager
 
@@ -19,6 +19,10 @@ shared_examples "manager map" do |dir, ext|
           "lib/#{dir}/lib4" => [
             "lib/#{dir}/lib1",
             "lib/#{dir}/lib4.#{ext}"
+          ],
+          "lib/#{dir}/lib5" => [
+            "lib/#{dir}/lib3/test",
+            "lib/#{dir}/lib5.#{ext}"
           ],
         },
         :app => {

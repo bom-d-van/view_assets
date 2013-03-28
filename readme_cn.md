@@ -1,7 +1,8 @@
 # ViewAssets
-ViewAssets(VA) 是一个简单的 Javascript, Stylesheets 依赖管理器。 根据 Rails 3.2 中的 asset pipeline，它会默认加载所有的 assets 资源，这样其实对于富 JS 应用而言并不是特别有利。因为每个页面有可能都包含着大量其它页面都需要用到的文件资源。VA 就是为了解决这个问题而提出来的。它支持每个页面都能够加载自己需要的 assets 资源，同时也保留了 assets pipeline 自动处理依赖的优点。   
 
-简单的概括这个 gem 就是它将在 view 中 *.html.erb 中声明的依赖转移到 js/css 文件中。在特定的文件(manifest file)中使用规定的语法(directive)声明依赖。   
+ViewAssets(VA) 是一个简单的 Javascript, Stylesheets 依赖管理器。 根据 Rails 3.2 中的 asset pipeline，它会默认加载所有的 assets 资源，这样其实对于富 JS 应用而言并不是特别有利。因为每个页面有可能都包含着大量其它页面都需要用到的文件资源。VA 就是为了解决这个问题而提出来的。它支持每个页面都能够加载自己需要的 assets 资源，同时也保留了 assets pipeline 自动处理依赖的优点。
+
+简单的概括这个 gem 就是它将在 view 中 *.html.erb 中声明的依赖转移到 js/css 文件中。在特定的文件(manifest file)中使用规定的语法(directive)声明依赖。
 
 ## Example
 
@@ -103,7 +104,7 @@ ViewAssets(VA) 是一个简单的 Javascript, Stylesheets 依赖管理器。 根
 而使用 VA 后，只需要在 /app/javascripts/foo/index/index.js 中如下声明：
 
 ```js
-  //= 
+  //=
 ``` -->
 
 ## CONVENTIONS/RULES
@@ -135,7 +136,7 @@ ViewAssets(VA) 是一个简单的 Javascript, Stylesheets 依赖管理器。 根
 
 ### manifest file
 
-**NOTE**  
+**NOTE**
 下面例子讲述的时候大都直接使用 javascript 当例子，stylesheets 的所有规则几乎和 javascripts 一致。如有不同会单独提示。
 
 manifest file 指的是用于声明文件依赖的文件，**只有在这个文件中声明依赖才是有效的**，因为 VA 只会解析 manifest file，并为你关联好依赖。
@@ -150,7 +151,7 @@ manifest file 指的是用于声明文件依赖的文件，**只有在这个文�
 
 如果该资源有多个文件，且存放于同一个文件夹中，则该文件夹中的 index.js 文件被定义为 manifest file。
 
-**NOTE**  
+**NOTE**
 注意同一个文件夹内的依赖不需要声明，因为 VA 会自动将文件中所有的 assets 文件加载进来。
 
 #### In App
@@ -171,20 +172,20 @@ manifest file 指的是用于声明文件依赖的文件，**只有在这个文�
 
 同样，VA 也可以在文件中声明依赖，声明的规则基本业余 pipeline 相似。js 中支持三种声明方式，css 中支持两种。
 
-    for javascript  
-      double-slash syntax => "//= require_vendor xxx"   
-      space-asterisk syntax => " *= require_vendor xxx"   
-      slash-asterisk syntax => "/*= require_vendor xxx */"  
+    for javascript
+      double-slash syntax => "//= require_vendor xxx"
+      space-asterisk syntax => " *= require_vendor xxx"
+      slash-asterisk syntax => "/*= require_vendor xxx */"
 
-    for stylesheets   
-      space-asterisk syntax => " *= require_vendor xxx"   
-      slash-asterisk syntax => "/*= require_vendor xxx */"  
+    for stylesheets
+      space-asterisk syntax => " *= require_vendor xxx"
+      slash-asterisk syntax => "/*= require_vendor xxx */"
 
 上面列出的三种声明方式，而声明指令也有三个，分别是：
 
-* `require_vendor` 会在 vendor 文件夹中寻找目的资源   
-* `require_lib` 会在 lib 文件夹中寻找目的资源    
-* `require` 会在 app 文件夹中寻找目的资源   
+* `require_vendor` 会在 vendor 文件夹中寻找目的资源
+* `require_lib` 会在 lib 文件夹中寻找目的资源
+* `require` 会在 app 文件夹中寻找目的资源
 
 对于 `require` 指令，AV 主要提供的是对同一个 controller 下和不同 controller 下的资源进行加载，这些文件都不会被视为 manifest file，所以不会对其进行解析。
 
@@ -232,7 +233,7 @@ end
 ```
 
 如果你的 controller 使用了自己的 layout 的话，则需要将在 `app/views/layouts/application.html.rb` 添加的代码也添加进去。
-    
+
 ## OTHERS
 
 虽然这个 gem 有一定的方便性，但毕竟这是个简单的设计，目前支持简单的依赖管理，并不是个像 assets pipeline 一样十分成熟的程序。目前它还不支持许多 assets pipeline 实现的事情，比如在 production 模式下自动将所有 assets 压缩成一个文件等。

@@ -1,0 +1,48 @@
+---
+:vendor:
+  vendor/stylesheets/vendor1:
+  - vendor/stylesheets/vendor1.css
+  vendor/stylesheets/vendor2:
+  - vendor/stylesheets/vendor2/index.css
+  vendor/stylesheets/vendor3:
+  - vendor/stylesheets/vendor3/test.css
+:lib:
+  lib/stylesheets/lib1:
+  - lib/stylesheets/lib1.css
+  lib/stylesheets/lib2:
+  - lib/stylesheets/lib2/index.css
+  lib/stylesheets/lib3:
+  - lib/stylesheets/lib3/test.css
+  lib/stylesheets/lib4:
+  - lib/stylesheets/lib1
+  - lib/stylesheets/lib4.css
+  lib/stylesheets/lib5:
+  - lib/stylesheets/lib3/test
+  - lib/stylesheets/lib5.css
+:app:
+  app/stylesheets/application:
+  - app/stylesheets/application.css
+  app/stylesheets/controller1/action1:
+  - app/stylesheets/application
+  - vendor/stylesheets/vendor1
+  - lib/stylesheets/lib4
+  - app/stylesheets/controller1/action3/test.css
+  - app/stylesheets/controller2/action3/test.css
+  - app/stylesheets/controller1/action1.css
+  app/stylesheets/controller1/action2:
+  - app/stylesheets/application
+  - app/stylesheets/controller1/action2/index.css
+  app/stylesheets/controller1/action3:
+  - app/stylesheets/application
+  - app/stylesheets/controller1/action3/test.css
+  app/stylesheets/controller2/controller2:
+  - app/stylesheets/controller2/controller2.css
+  app/stylesheets/controller2/action1:
+  - app/stylesheets/controller2/controller2
+  - app/stylesheets/controller2/action1.css
+  app/stylesheets/controller2/action2:
+  - app/stylesheets/controller2/controller2
+  - app/stylesheets/controller2/action2/index.css
+  app/stylesheets/controller2/action3:
+  - app/stylesheets/controller2/controller2
+  - app/stylesheets/controller2/action3/test.css

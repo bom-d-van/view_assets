@@ -1,11 +1,7 @@
 module ViewAssets
   module Packager
     class ActionsMap
-      # # =>
-      # {
-      #   :controller1 => [:action1, :action2, ..],
-      #   ..
-      # }
+      # @return => { :controller1 => [:action1, :action2, ..], ..}
       def retrieve
         action_path.children.select(&:directory?).each_with_object({}) do |controller, action_map|
           all_children = controller.children.map do |action|
@@ -20,6 +16,7 @@ module ViewAssets
       private
 
       def action_path
+        puts PathInfo.new("#{APP_FOLDER}/#{asset_path}").abs
         Pathname.new(PathInfo.new("#{APP_FOLDER}/#{asset_path}").abs)
       end
     end
