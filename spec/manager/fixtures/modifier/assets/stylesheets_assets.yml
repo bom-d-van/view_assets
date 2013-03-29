@@ -8,6 +8,7 @@
   - vendor/stylesheets/vendor3/test.css
 :lib:
   lib/stylesheets/lib1:
+  - lib/stylesheets/lib5
   - lib/stylesheets/lib1.css
   lib/stylesheets/lib2:
   - lib/stylesheets/lib2/index.css
@@ -39,6 +40,8 @@
   - app/stylesheets/controller2/controller2.css
   app/stylesheets/controller2/action1:
   - app/stylesheets/controller2/controller2
+  - lib/stylesheets/lib1
+  - lib/stylesheets/lib5
   - app/stylesheets/controller2/action1.css
   app/stylesheets/controller2/action2:
   - app/stylesheets/controller2/controller2

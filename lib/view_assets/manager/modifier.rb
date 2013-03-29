@@ -79,20 +79,21 @@ module ViewAssets
           end
         end
 
+        requirements.delete("#{manifest}.#{ext}")
         requirements.reject! { |req| req.match(manifest + '/') }
 
-        requirements.each_with_object([]) do |requirement, block|
+        requirements.each_with_object(["/**"]) do |requirement, block|
           directive, prefix = case retrieve_type(requirement)
                               when :vendor
-                                ['//= require_vendor ', "vendor/#{asset_path}/"]
+                                [' *= require_vendor ', "vendor/#{asset_path}/"]
                               when :lib
-                                ['//= require_lib ', "lib/#{asset_path}/"]
+                                [' *= require_lib ', "lib/#{asset_path}/"]
                               when :app
-                                ['//= require ', "app/#{asset_path}"]
+                                [' *= require ', "app/#{asset_path}"]
                               end
 
-          block.push("#{directive}#{requirement.gsub(prefix, "")}\n")
-        end.join("")
+          block.push("#{directive}#{requirement.gsub(prefix, "")}")
+        end.push(' */').join("\n")
       end
 
       def remove(index)
@@ -164,9 +165,22 @@ module ViewAssets
     end
 
     class CssModifier < Modifier
+      def initialize
+        @map = ::ViewAssets::Manager::CssMap.new
+        @map_value = @map.draw
+      end
+
       DIRECTIVE = ::ViewAssets::Finder::Directive.new(CSS_TYPE)
       def directive
         DIRECTIVE
+      end
+
+      def ext
+        CSS_EXT
+      end
+
+      def asset_path
+        ::ViewAssets::CSS_PATH
       end
     end
   end
