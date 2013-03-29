@@ -53,37 +53,67 @@ module ViewAssets
             if requirements.any? { |requirement| requirement == index }
               requirements[requirements.index(index)] = new_index
 
-              modify(manifest, generate_requirements_block(requirements))
+              modify(manifest, generate_requirements_block(manifest, requirements))
             end
           end
         end
       end
 
-      def generate_requirements_block(requirements)
-        requirements.each_with_object("") do |requirement, block|
-          directive = case retrieve_type(requirement)
-                      when :vendor
-                        '//= require_vendor '
-                      when :lib
-                        '//= require_lib '
-                      when :app
-                        '//= require '
-                      end
+      def generate_requirements_block(manifest, requirements)
+        if retrieve_type(manifest) == :app
+          # Remove 'app/:asset_path/application' or
+          #        'app/:asset_path/application.:ext'
+          requirements.delete("app/#{asset_path}/application")
+          requirements.delete("app/#{asset_path}/application.#{ext}")
 
-          block += "#{directive}#{requirement}\n"
+          # Remove 'app/:asset_path/controller/controller' or
+          #        'app/:asset_path/controller/controller.ext'
+          if manifest.count('/') > 2
+            controller_asset = manifest.gsub(
+                                 /(?<path>.+\/.+\/(?<controller>.+)\/).+/,
+                                 '\k<path>\k<controller>'
+                               )
+
+            requirements.delete("#{controller_asset}")
+            requirements.delete("#{controller_asset}.#{ext}")
+          end
         end
+
+        requirements.reject! { |req| req.match(manifest + '/') }
+
+        requirements.each_with_object([]) do |requirement, block|
+          directive, prefix = case retrieve_type(requirement)
+                              when :vendor
+                                ['//= require_vendor ', "vendor/#{asset_path}/"]
+                              when :lib
+                                ['//= require_lib ', "lib/#{asset_path}/"]
+                              when :app
+                                ['//= require ', "app/#{asset_path}"]
+                              end
+
+          block.push("#{directive}#{requirement.gsub(prefix, "")}\n")
+        end.join("")
       end
 
       def remove(index)
 
       end
 
-      def modify(asset, new_requirement_block)
+      def modify(path, new_requirement_block)
+        path = PathInfo.new(path).abs
+        manifest = if FileTest.exists?("#{path}.#{ext}")
+                     "#{path}.#{ext}"
+                   elsif FileTest.exists?("#{path}/index.#{ext}")
+                     "#{path}/index.#{ext}"
+                   else
+                     raise Error.new("Can't Load #{path.rel}")
+                   end
+
         start_of_requirement_block = false
         end_of_requirement_block = false
         asset_content = ''
 
-        Pathname.new(asset).each_line do |line|
+        Pathname.new(manifest).each_line do |line|
           legal_directive = analyize(*directive.parse(line))
 
           start_of_requirement_block = true if legal_directive && !start_of_requirement_block
@@ -94,7 +124,7 @@ module ViewAssets
           end
         end
 
-        File.open(asset, 'w') do |file|
+        File.open(manifest, 'w') do |file|
           file << new_requirement_block
           file << asset_content
         end
@@ -126,6 +156,10 @@ module ViewAssets
 
       def ext
         JS_EXT
+      end
+
+      def asset_path
+        ::ViewAssets::JS_PATH
       end
     end
 

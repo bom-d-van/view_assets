@@ -154,6 +154,7 @@ module ViewAssets
         required_assets.flatten
       end
 
+      # Support Multiple Path Params
       def analyze(asset_category, path_params)
         case asset_category
         when 'vendor'
@@ -201,7 +202,7 @@ module ViewAssets
       # todo BUG => can't retrieve assets with slash-asterisk(/*= xxx */) directive.
       # todo add specs for testing required folders without index
       def meta_retrieve(manifest_path, manifest)
-        # TODO: to support manifest with file extension
+        # TODO: add Tests for Manifest With File Extension
         single_file_lib = PathInfo.new("#{manifest_path}/#{manifest}#{PathInfo.new(manifest).with_ext? ? '' : ".#{asset_extension}"}")
 
         manifest_dir               = "#{manifest_path}/#{manifest}"

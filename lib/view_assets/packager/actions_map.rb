@@ -16,7 +16,6 @@ module ViewAssets
       private
 
       def action_path
-        puts PathInfo.new("#{APP_FOLDER}/#{asset_path}").abs
         Pathname.new(PathInfo.new("#{APP_FOLDER}/#{asset_path}").abs)
       end
     end

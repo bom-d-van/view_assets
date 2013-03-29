@@ -8,6 +8,7 @@
   - vendor/javascripts/vendor3/test.js
 :lib:
   lib/javascripts/lib1:
+  - lib/javascripts/lib5
   - lib/javascripts/lib1.js
   lib/javascripts/lib2:
   - lib/javascripts/lib2/index.js
@@ -39,6 +40,8 @@
   - app/javascripts/controller2/controller2.js
   app/javascripts/controller2/action1:
   - app/javascripts/controller2/controller2
+  - lib/javascripts/lib1
+  - lib/javascripts/lib5
   - app/javascripts/controller2/action1.js
   app/javascripts/controller2/action2:
   - app/javascripts/controller2/controller2
