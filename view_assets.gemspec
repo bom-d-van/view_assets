@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "sqlite3"
 
   s.add_development_dependency "rspec"
-  s.add_development_dependency "ZenTest", "4.8.3"
+  s.add_development_dependency "ZenTest"
   s.add_development_dependency "rspec-nc"
   # s.add_development_dependency "autotest-growl"
 end
