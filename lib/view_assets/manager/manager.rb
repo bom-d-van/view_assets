@@ -1,6 +1,7 @@
 module ViewAssets
   module Manager
     require 'yaml'
+    require 'term/ansicolor'
 
     require 'view_assets'
     require 'view_assets/finder/core'

@@ -1,6 +1,8 @@
 module ViewAssets
   module Manager
     class Modifier
+      include Term::ANSIColor
+
       def update(index, new_index, options = {})
         options = { :verbal => false }.update(options)
 
@@ -19,9 +21,9 @@ module ViewAssets
         #   end
         # end
 
-        raise Error.new("#{index} is not exist.") unless validate_index
+        raise Error.new(red("#{index} is not exist.")) unless validate_index
 
-        puts "mv #{index}, #{new_index}" if options[:verbal]
+        puts green("mv #{index}, #{new_index}") if options[:verbal]
         update_index(index, new_index)
         update_requirements(index, new_index, options)
       end
@@ -46,7 +48,7 @@ module ViewAssets
         elsif FileTest.exists?("#{path_to_index}.#{ext}")
           FileUtils.mv("#{path_to_index}.#{ext}", "#{new_path_to_index}.#{ext}")
         else
-          raise Error.new("Manifest #{index} doesn't exist.")
+          raise Error.new(red("Manifest #{index} doesn't exist."))
         end
       end
 
@@ -56,7 +58,7 @@ module ViewAssets
         map.each_value do |type|
           type.each do |manifest, requirements|
             if requirements.any? { |requirement| requirement == index }
-              puts "Update #{manifest}" if options[:verbal]
+              puts ("Update #{green(manifest)}") if options[:verbal]
 
               if new_index.empty?
                 requirements.delete(index)
@@ -104,22 +106,22 @@ module ViewAssets
                               end
 
           block.push("#{directive}#{requirement.gsub(prefix, "")}")
-        end.push(' */').join("\n")
+        end.push(' */').join("\n")+"\n"
       end
 
       def remove(index, options = {})
         options = { :verbal => false }.update(options)
 
-        raise Error.new("#{index} is not exist.") unless map[retrieve_type(index)].key?(index)
+        raise Error.new(red("#{index} is not exist.")) unless map[retrieve_type(index)].key?(index)
 
-        puts "rm #{index}" if options[:verbal]
+        puts green("rm #{index}") if options[:verbal]
         index_path = PathInfo.new(index).abs
         if FileTest.exist?("#{index_path}.#{ext}")
           FileUtils.rm_r("#{index_path}.#{ext}")
         elsif FileTest.exist?(index_path)
           FileUtils.rm_r("#{index_path}")
         else
-          raise Error.new("#{index} Is Not Exist.")
+          raise Error.new(red("#{index} Is Not Exist."))
         end
 
         update_requirements(index, '', options)
@@ -132,7 +134,7 @@ module ViewAssets
                    elsif FileTest.exists?("#{path}/index.#{ext}")
                      "#{path}/index.#{ext}"
                    else
-                     raise Error.new("Can't Load #{path.rel}")
+                     raise Error.new(red("Can't Load #{path.rel}"))
                    end
 
         start_of_requirement_block = false

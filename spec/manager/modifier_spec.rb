@@ -91,7 +91,7 @@ shared_examples "modifier" do |dir, ext|
                             " *= require /controller2/action2/something",
                             " *= require /controller/action2/something",
                             " */"
-                          ].join("\n")
+                          ].join("\n") + "\n"
     end
   end
 
