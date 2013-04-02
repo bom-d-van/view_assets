@@ -13,7 +13,10 @@ describe ActionsMap do
         "controller3" => ["action1"]
       }
 
-      JsActionsMap.new.retrieve.should == expected
+      map = JsActionsMap.new.retrieve
+      map["controller1"].should =~ expected["controller1"]
+      map["controller2"].should =~ expected["controller2"]
+      map["controller3"].should =~ expected["controller3"]
     end
   end
 
@@ -25,7 +28,10 @@ describe ActionsMap do
         "controller3" => ["action1"]
       }
 
-      CssActionsMap.new.retrieve.should == expected
+      map = CssActionsMap.new.retrieve
+      map["controller1"].should =~ expected["controller1"]
+      map["controller2"].should =~ expected["controller2"]
+      map["controller3"].should =~ expected["controller3"]
     end
   end
 end
