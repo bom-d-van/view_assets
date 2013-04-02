@@ -37,7 +37,7 @@ describe JsPackager do
         controller3_action1-d41d8cd98f00b204e9800998ecf8427e.js
       ).map { |file| "#{PACKAGER_TEST_ROOT}/assets/#{JS_PATH}/#{file}" }
 
-      Dir["#{PACKAGER_TEST_ROOT}/assets/#{JS_PATH}/*.js"].should == expected
+      Dir["#{PACKAGER_TEST_ROOT}/assets/#{JS_PATH}/*.js"].should =~ expected
     end
 
     context "using other compressor" do
@@ -103,7 +103,7 @@ describe CssPackager do
         controller3_action1-d41d8cd98f00b204e9800998ecf8427e.css
       ).map { |file| "#{PACKAGER_TEST_ROOT}/assets/#{CSS_PATH}/#{file}" }
 
-      Dir["#{PACKAGER_TEST_ROOT}/assets/#{CSS_PATH}/*.css"].should == expected
+      Dir["#{PACKAGER_TEST_ROOT}/assets/#{CSS_PATH}/*.css"].should =~ expected
     end
 
     context "using other compressor" do

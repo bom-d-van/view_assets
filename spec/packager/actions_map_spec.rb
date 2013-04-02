@@ -4,7 +4,7 @@ describe ActionsMap do
   before(:each) do
     PathInfo.any_instance.stub(:root).and_return(File.expand_path('fixtures/actions_map', File.dirname(__FILE__)))
   end
-  
+
   describe JsActionsMap do
     it "retrieve all controller-actions map" do
       expected = {
@@ -12,7 +12,7 @@ describe ActionsMap do
         "controller2" => ["action1", "action2"],
         "controller3" => ["action1"]
       }
-      
+
       JsActionsMap.new.retrieve.should == expected
     end
   end
@@ -24,7 +24,7 @@ describe ActionsMap do
         "controller2" => ["action1", "action2"],
         "controller3" => ["action1"]
       }
-      
+
       CssActionsMap.new.retrieve.should == expected
     end
   end

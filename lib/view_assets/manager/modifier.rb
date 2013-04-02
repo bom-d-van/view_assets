@@ -1,7 +1,9 @@
 module ViewAssets
   module Manager
     class Modifier
-      def update(index, new_index)
+      def update(index, new_index, options = {})
+        options = { :verbal => false }.update(options)
+
         type = retrieve_type(index)
         validate_index = map[type].key?(index)
 
@@ -19,8 +21,9 @@ module ViewAssets
 
         raise Error.new("#{index} is not exist.") unless validate_index
 
+        puts "mv #{index}, #{new_index}" if options[:verbal]
         update_index(index, new_index)
-        update_requirements(index, new_index)
+        update_requirements(index, new_index, options)
       end
 
       def retrieve_type(index)
@@ -47,10 +50,14 @@ module ViewAssets
         end
       end
 
-      def update_requirements(index, new_index)
+      def update_requirements(index, new_index, options = {})
+        options = { :verbal => false }.update(options)
+
         map.each_value do |type|
           type.each do |manifest, requirements|
             if requirements.any? { |requirement| requirement == index }
+              puts "Update #{manifest}" if options[:verbal]
+
               if new_index.empty?
                 requirements.delete(index)
               else
@@ -100,9 +107,12 @@ module ViewAssets
         end.push(' */').join("\n")
       end
 
-      def remove(index)
+      def remove(index, options = {})
+        options = { :verbal => false }.update(options)
+
         raise Error.new("#{index} is not exist.") unless map[retrieve_type(index)].key?(index)
 
+        puts "rm #{index}" if options[:verbal]
         index_path = PathInfo.new(index).abs
         if FileTest.exist?("#{index_path}.#{ext}")
           FileUtils.rm_r("#{index_path}.#{ext}")
@@ -112,7 +122,7 @@ module ViewAssets
           raise Error.new("#{index} Is Not Exist.")
         end
 
-        update_requirements(index, '')
+        update_requirements(index, '', options)
       end
 
       def modify(path, new_requirement_block)

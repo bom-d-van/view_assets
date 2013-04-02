@@ -23,7 +23,7 @@ shared_examples "finder" do |dir, ext, tag|
           app/#{dir}/controller1/action1.#{ext}
         )
 
-        result.should == expected
+        result.should =~ expected
       end
 
       it "using specific controller.#{ext}" do
@@ -35,7 +35,7 @@ shared_examples "finder" do |dir, ext, tag|
           app/#{dir}/controller2/action1.#{ext}
         )
 
-        result.should == expected
+        result.should =~ expected
       end
 
       it "automatically requiring files in indexed requirements" do
@@ -48,7 +48,7 @@ shared_examples "finder" do |dir, ext, tag|
           app/#{dir}/controller1/action2/others2.#{ext}
         )
 
-        result.should == expected
+        result.should =~ expected
       end
 
       it "using index as manifest in indexed requirements" do
@@ -63,7 +63,7 @@ shared_examples "finder" do |dir, ext, tag|
           app/#{dir}/controller1/action3/others.#{ext}
         )
 
-        result.should == expected
+        result.should =~ expected
       end
 
       it "automatically requiring deeply-nested files in indexed requirements" do
@@ -80,7 +80,7 @@ shared_examples "finder" do |dir, ext, tag|
           app/#{dir}/controller1/action4/others.#{ext}
         )
 
-        result.should == expected
+        result.should =~ expected
       end
     end
 
@@ -98,7 +98,7 @@ shared_examples "finder" do |dir, ext, tag|
           app/#{dir}/controller1/action5.#{ext}
         )
 
-        result.should == expected
+        result.should =~ expected
       end
 
       it "retrieves multiple-files libs and vendors" do
@@ -116,7 +116,7 @@ shared_examples "finder" do |dir, ext, tag|
           app/#{dir}/controller1/action6/index.#{ext}
         )
 
-        result.should == expected
+        result.should =~ expected
       end
 
       it "retrieves indexed libs and vendors" do
@@ -138,7 +138,7 @@ shared_examples "finder" do |dir, ext, tag|
           app/#{dir}/controller1/action7.#{ext}
         )
 
-        result.should == expected
+        result.should =~ expected
       end
 
       it "avoids end-less retrieving for closed-loop requirements" do
@@ -152,7 +152,7 @@ shared_examples "finder" do |dir, ext, tag|
           app/#{dir}/controller1/action8.#{ext}
         )
 
-        result.should == expected
+        result.should =~ expected
       end
 
       it "supports multiple requiring directives" do
@@ -169,7 +169,7 @@ shared_examples "finder" do |dir, ext, tag|
           app/#{dir}/controller3/action1.#{ext}
         )
 
-        result.should == expected
+        result.should =~ expected
       end
 
       it "retrieves assets from another action" do
@@ -183,7 +183,7 @@ shared_examples "finder" do |dir, ext, tag|
           app/#{dir}/controller1/action9.#{ext}
         )
 
-        result.should == expected
+        result.should =~ expected
       end
 
       it "retrieves assets from another controller" do
@@ -197,22 +197,22 @@ shared_examples "finder" do |dir, ext, tag|
           app/#{dir}/controller1/action11/index.#{ext}
         )
 
-        result.should == expected
+        result.should =~ expected
       end
     end
 
     it "support :full options" do
       result = finder.retrieve('controller1', 'action12', :full => true)
       expected = %W(
-        /Users/bom_d_van/Code/ruby/view_assets/spec/finder/fixtures/vendor/#{dir}/vendor1.#{ext}
-        /Users/bom_d_van/Code/ruby/view_assets/spec/finder/fixtures/lib/#{dir}/lib1.#{ext}
-        /Users/bom_d_van/Code/ruby/view_assets/spec/finder/fixtures/app/#{dir}/application.#{ext}
-        /Users/bom_d_van/Code/ruby/view_assets/spec/finder/fixtures/vendor/#{dir}/vendor11.#{ext}
-        /Users/bom_d_van/Code/ruby/view_assets/spec/finder/fixtures/lib/#{dir}/lib12.#{ext}
-        /Users/bom_d_van/Code/ruby/view_assets/spec/finder/fixtures/app/#{dir}/controller1/action12.#{ext}
+        #{File.dirname(__FILE__)}/fixtures/vendor/#{dir}/vendor1.#{ext}
+        #{File.dirname(__FILE__)}/fixtures/lib/#{dir}/lib1.#{ext}
+        #{File.dirname(__FILE__)}/fixtures/app/#{dir}/application.#{ext}
+        #{File.dirname(__FILE__)}/fixtures/vendor/#{dir}/vendor11.#{ext}
+        #{File.dirname(__FILE__)}/fixtures/lib/#{dir}/lib12.#{ext}
+        #{File.dirname(__FILE__)}/fixtures/app/#{dir}/controller1/action12.#{ext}
       )
 
-      result.should == expected
+      result.should =~ expected
     end
 
     it "support :tagged options" do
@@ -226,7 +226,7 @@ shared_examples "finder" do |dir, ext, tag|
         /app/#{dir}/controller1/action12.#{ext}
       ).map { |asset| tag.call(ext.to_sym, asset) }
 
-      result.should == expected
+      result.should =~ expected
     end
 
     it "return tagged assets with rel path even :full options is true" do
@@ -240,7 +240,7 @@ shared_examples "finder" do |dir, ext, tag|
         /app/#{dir}/controller1/action12.#{ext}
       ).map { |asset| tag.call(ext.to_sym, asset) }
 
-      result.should == expected
+      result.should =~ expected
     end
 
     context "controller only retrieval" do
@@ -252,7 +252,7 @@ shared_examples "finder" do |dir, ext, tag|
           app/#{dir}/application.#{ext}
         )
 
-        result.should == expected
+        result.should =~ expected
       end
 
       it "retrieve custom controller assets" do
@@ -265,7 +265,7 @@ shared_examples "finder" do |dir, ext, tag|
           app/#{dir}/controller3/controller3.#{ext}
         )
 
-        result.should == expected
+        result.should =~ expected
       end
     end
 
@@ -284,7 +284,7 @@ shared_examples "finder" do |dir, ext, tag|
           app/#{dir}/controller1/action13.#{ext}
         )
 
-        result.should == expected
+        result.should =~ expected
       end
     end
 
@@ -300,7 +300,7 @@ shared_examples "finder" do |dir, ext, tag|
           app/#{dir}/controller1/action13.#{ext}
         )
 
-        result.should == expected
+        result.should =~ expected
       end
     end
   end
@@ -312,7 +312,7 @@ shared_examples "finder" do |dir, ext, tag|
         vendor/#{dir}/vendor11.#{ext}
       )
 
-      result.should == expected
+      result.should =~ expected
     end
 
     context "retrieve assets with requirements" do
@@ -324,7 +324,7 @@ shared_examples "finder" do |dir, ext, tag|
           vendor/#{dir}/vendor12.#{ext}
         )
 
-        result.should == expected
+        result.should =~ expected
       end
 
       it "retrieve with shallow option" do
@@ -334,7 +334,7 @@ shared_examples "finder" do |dir, ext, tag|
           vendor/#{dir}/vendor12.#{ext}
         )
 
-        result.should == expected
+        result.should =~ expected
       end
     end
   end
