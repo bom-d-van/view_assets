@@ -6,6 +6,7 @@ module ViewAssets
 
     rake_tasks do
       require 'tasks/basic'
+      require 'tasks/tool'
     end
   end
 end

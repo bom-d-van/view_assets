@@ -3,6 +3,39 @@ require "view_assets/manager/manager"
 include ViewAssets::Manager
 
 shared_examples "modifier" do |dir, ext|
+  describe "#update_requirements" do
+    modifier_fixtures_path = File.expand_path("fixtures/modifier", File.dirname(__FILE__))
+    back_up_modifier_fixtures_path = "#{modifier_fixtures_path}.backup"
+    before(:all) do
+      FileUtils.cp_r(modifier_fixtures_path, back_up_modifier_fixtures_path)
+    end
+
+    after(:all) do
+      FileUtils.rm_rf(modifier_fixtures_path)
+      FileUtils.mv(back_up_modifier_fixtures_path, modifier_fixtures_path)
+    end
+
+    before(:each) do
+      Rails.stub(:public_path).and_return(modifier_fixtures_path)
+
+      FileUtils.rm_rf(modifier_fixtures_path)
+      FileUtils.cp_r(back_up_modifier_fixtures_path, modifier_fixtures_path)
+    end
+
+    it "remove requirements when new_index is empty" do
+      lib5 = "lib/#{dir}/lib5"
+
+      modifier.map[:lib]["lib/#{dir}/lib1"].include?(lib5).should == true
+      modifier.map[:app]["app/#{dir}/controller2/action1"].include?(lib5).should == true
+
+      modifier.update_requirements(lib5, '')
+      modifier.update_map
+
+      modifier.map[:lib]["lib/#{dir}/lib1"].include?(lib5).should == false
+      modifier.map[:app]["app/#{dir}/controller2/action1"].include?(lib5).should == false
+    end
+  end
+
   describe "#modify" do
     before(:each) do
       Rails.stub(:public_path).and_return("#{File.expand_path("fixtures/map", File.dirname(__FILE__))}")
@@ -132,6 +165,41 @@ shared_examples "modifier" do |dir, ext|
       action1 = modifier.map[:app]["app/#{dir}/controller1/action1-1"]
       action1.include?("app/#{dir}/controller1/action1-1.#{ext}").should == true
       action1.include?("app/#{dir}/controller1/action1.#{ext}").should == false
+    end
+  end
+
+  describe "#remove" do
+    modifier_fixtures_path = File.expand_path("fixtures/modifier", File.dirname(__FILE__))
+    back_up_modifier_fixtures_path = "#{modifier_fixtures_path}.backup"
+    before(:all) do
+      FileUtils.cp_r(modifier_fixtures_path, back_up_modifier_fixtures_path)
+    end
+
+    after(:all) do
+      FileUtils.rm_rf(modifier_fixtures_path)
+      FileUtils.mv(back_up_modifier_fixtures_path, modifier_fixtures_path)
+    end
+
+    before(:each) do
+      Rails.stub(:public_path).and_return(modifier_fixtures_path)
+
+      FileUtils.rm_rf(modifier_fixtures_path)
+      FileUtils.cp_r(back_up_modifier_fixtures_path, modifier_fixtures_path)
+    end
+
+    it "remove requirements when new_index is empty" do
+      lib5 = "lib/#{dir}/lib5"
+
+      modifier.map[:lib].include?(lib5).should == true
+      modifier.map[:lib]["lib/#{dir}/lib1"].include?(lib5).should == true
+      modifier.map[:app]["app/#{dir}/controller2/action1"].include?(lib5).should == true
+
+      modifier.remove(lib5)
+      modifier.update_map
+
+      modifier.map[:lib].include?(lib5).should == false
+      modifier.map[:lib]["lib/#{dir}/lib1"].include?(lib5).should == false
+      modifier.map[:app]["app/#{dir}/controller2/action1"].include?(lib5).should == false
     end
   end
 end

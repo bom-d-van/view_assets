@@ -5,17 +5,17 @@ module ViewAssets
         type = retrieve_type(index)
         validate_index = map[type].key?(index)
 
-        unless validate_index
-          map.each_value do |manifests|
-            validate_index = manifests.select do |manifest, indexes|
-                               indexes.any? do |map_index|
-                                 map_index.match(index)
-                               end
-                             end
-
-            break if validate_index
-          end
-        end
+        # unless validate_index
+        #   map.each_value do |manifests|
+        #     validate_index = manifests.select do |manifest, indexes|
+        #                        indexes.any? do |map_index|
+        #                          map_index.match(index)
+        #                        end
+        #                      end
+        #
+        #     break if validate_index
+        #   end
+        # end
 
         raise Error.new("#{index} is not exist.") unless validate_index
 
@@ -51,7 +51,11 @@ module ViewAssets
         map.each_value do |type|
           type.each do |manifest, requirements|
             if requirements.any? { |requirement| requirement == index }
-              requirements[requirements.index(index)] = new_index
+              if new_index.empty?
+                requirements.delete(index)
+              else
+                requirements[requirements.index(index)] = new_index
+              end
 
               modify(manifest, generate_requirements_block(manifest, requirements))
             end
@@ -97,7 +101,18 @@ module ViewAssets
       end
 
       def remove(index)
+        raise Error.new("#{index} is not exist.") unless map[retrieve_type(index)].key?(index)
 
+        index_path = PathInfo.new(index).abs
+        if FileTest.exist?("#{index_path}.#{ext}")
+          FileUtils.rm_r("#{index_path}.#{ext}")
+        elsif FileTest.exist?(index_path)
+          FileUtils.rm_r("#{index_path}")
+        else
+          raise Error.new("#{index} Is Not Exist.")
+        end
+
+        update_requirements(index, '')
       end
 
       def modify(path, new_requirement_block)
