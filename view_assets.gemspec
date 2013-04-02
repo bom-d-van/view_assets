@@ -25,5 +25,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "sqlite3"
   s.add_development_dependency "rspec"
   s.add_development_dependency "ZenTest"
-  s.add_development_dependency "rspec-nc" if RUBY_PLATFORM == "x86_64-darwin12.2.0"
+  # s.add_development_dependency "rspec-nc"
 end
