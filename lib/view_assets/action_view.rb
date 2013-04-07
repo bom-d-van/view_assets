@@ -12,26 +12,20 @@ module ViewAssets
         css_manifest = YAML.load(File.open("#{Rails.public_path}#{css_path}/manifest.yml").read)
         js_manifest  = YAML.load(File.open("#{Rails.public_path}#{js_path}/manifest.yml").read)
 
-        case
-        when css_location = css_manifest["#{css_path}/#{controller}_#{action}.#{ViewAssets::CSS_EXT}"]
-        when css_location = css_manifest["#{css_path}/#{controller}.#{ViewAssets::CSS_EXT}"]
-        when css_location = css_manifest["#{css_path}/application.#{ViewAssets::CSS_EXT}"]
-        end
+        css_location = css_manifest["#{css_path}/#{controller}_#{action}.#{ViewAssets::CSS_EXT}"] ||
+                       css_manifest["#{css_path}/#{controller}.#{ViewAssets::CSS_EXT}"] ||
+                       css_manifest["#{css_path}/application.#{ViewAssets::CSS_EXT}"]
+        js_location = js_manifest["#{js_path}/#{controller}_#{action}.#{ViewAssets::JS_EXT}"] ||
+                      js_manifest["#{js_path}/#{controller}.#{ViewAssets::JS_EXT}"] ||
+                      js_manifest["#{js_path}/application.#{ViewAssets::JS_EXT}"]
 
-        case
-        when js_location = js_manifest["#{js_path}/#{controller}_#{action}.#{ViewAssets::JS_EXT}"]
-        when js_location = js_manifest["#{js_path}/#{controller}.#{ViewAssets::JS_EXT}"]
-        when js_location = js_manifest["#{js_path}/application.#{ViewAssets::JS_EXT}"]
-        end
-
-        assets.push ViewAssets.tag(:css, css_location)
-        assets.push ViewAssets.tag(:js, js_location)
+        assets.push ViewAssets.tag(:css, css_location) unless css_location.nil?
+        assets.push ViewAssets.tag(:js, js_location) unless js_location.nil?
       else
         assets.concat ViewAssets::Finder::CssFinder.new.retrieve(controller, action, :tagged => true)
         assets.concat ViewAssets::Finder::JsFinder.new.retrieve(controller, action, :tagged => true)
       end
 
-      # assets.map { |asset| raw(asset) }
       raw(assets.flatten.uniq.join("\n "))
     end
   end

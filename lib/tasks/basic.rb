@@ -23,17 +23,28 @@ namespace :va do
     end
   end
 
-  desc "Compress assets for deployment(Must be executed before running rails app on production mode)"
-  task :compress do
+  desc "Compress assets for deployment. Avaliable Englines are 'yui-compressor'(default), 'google-closure'(js only), 'uglifier'(js only). (Must be executed before running rails app on production mode)."
+  task :compress, [:type, :engine] do |t, args|
+    args.with_defaults(:type => 'both', :engine => 'yui-compressor')
+    puts "Start Packaging[Compressor => #{args.engine}, Type => #{args.type}]:"
+
     require 'view_assets/packager/core'
     require 'term/ansicolor'
     include Term::ANSIColor
 
-    puts green(bold("Packaging Js Assets"))
-    ViewAssets::Packager::JsPackager.new.package
+    options = { :compress_engine => args.engine }
 
-    puts green(bold("Packaging Css Assets"))
-    ViewAssets::Packager::CssPackager.new.package
+    if %w(js both).include?(args.type)
+      puts green(bold("Packaging Js Assets"))
+      ViewAssets::Packager::JsPackager.new.package({}, options)
+    end
+
+    if %w(css both).include?(args.type)
+      puts green(bold("Packaging Css Assets"))
+      ViewAssets::Packager::CssPackager.new.package({}, options)
+    end
+
+    puts "Done."
   end
 
   desc "Check assets to know whether it is eligible"

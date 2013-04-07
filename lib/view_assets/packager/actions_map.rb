@@ -1,5 +1,6 @@
 module ViewAssets
   module Packager
+    # ActionMap is used for retrieving a map containing controller and action by parsing the app the directory.
     class ActionsMap
       # @return => { :controller1 => [:action1, :action2, ..], ..}
       def retrieve

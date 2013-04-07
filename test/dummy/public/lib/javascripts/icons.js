@@ -58,7 +58,7 @@ Wando.icons = {
     /**
      * 导入
      */
-    importVanCorrect: "import",
+    import: "import",
     /**
      * 左移
      */
